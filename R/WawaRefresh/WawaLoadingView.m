@@ -9,6 +9,8 @@
 #import "WawaLoadingView.h"
 
 #define WawaRadians(x) (M_PI * (x) / 180.0)
+static const NSInteger WAWALOADINCOUNT  = 12;
+static const CGFloat  WAWA_CIRCLE_ANGLE = 360.0f/WAWALOADINCOUNT;
 
 
 #pragma mark -######################## WawaWeakProxy ################################################
@@ -60,7 +62,6 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
     return nil;
 }
 
-static const CGFloat  WAWA_CIRCLE_ANGLE = 360.0f/WAWALOADINCOUNT;
 
 @interface WawaLoadingView()
 {

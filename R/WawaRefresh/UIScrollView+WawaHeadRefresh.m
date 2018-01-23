@@ -105,12 +105,12 @@ static char WawaHeadRefreshViewKey;
     return self;
 }
 
-
 - (void)willMoveToSuperview:(UIView *)newSuperview
-{    
+{
     if (self.superview && newSuperview == nil)
     {
-        NSLog(@"----%s__ ",__PRETTY_FUNCTION__);
+        UIScrollView *scrollView = (UIScrollView *)self.superview;
+        [scrollView removeObserver:self forKeyPath:@"contentOffset"];
     }
 }
 
@@ -155,13 +155,13 @@ static char WawaHeadRefreshViewKey;
 {
     if (self.loadingView.headLoading)
     {
-        [self.loadingView stopAnimation];
-
         [UIView animateWithDuration:0.4f animations:^{
-            self.transform =  CGAffineTransformScale(self.transform, 0.3f, 0.3f);
+            self.transform =  CGAffineTransformScale(CGAffineTransformIdentity, 0.2f, 0.2f);
+            
             UIEdgeInsets contentInset = self.scrollView.contentInset;
             contentInset.top -= WAWALOADINGHEIGHT;
             self.scrollView.contentInset = contentInset;
+            
             [self setSelfOffSetY:self.scrollView.contentOffset.y];
             
         }completion:^(BOOL finished) {
@@ -174,11 +174,13 @@ static char WawaHeadRefreshViewKey;
 {
     if (_loadingView)
     {
+        [self.loadingView stopAnimation];
+
         [_loadingView removeFromSuperview];
         _loadingView = nil;
     }
     
-    self.transform = CGAffineTransformIdentity;
+//    self.transform = CGAffineTransformIdentity;
 }
 
 

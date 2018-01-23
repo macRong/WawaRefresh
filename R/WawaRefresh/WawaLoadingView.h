@@ -36,11 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 
-// ?
-static const NSInteger WAWALOADINCOUNT   = 12;
 
-
-id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger index);
 
 /** 参考:
  
