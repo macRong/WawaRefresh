@@ -12,7 +12,7 @@
 
 typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
     WawaHeadRefreshPositionTop,
-    WawaHeadRefreshPositionToBack /** 在scrollView下面（比如：scrollView展示不是全频模式） */
+    WawaHeadRefreshPositionToBack
 };
 
 @interface UIScrollView (WawaHeadRefresh)
@@ -35,12 +35,4 @@ typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
 @end
 
 
-/**
- question:
- 
- 1.快速滑动处理
- 2.Timer
- 3.💥时 inset设置生硬
- 
- 
- */
+

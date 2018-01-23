@@ -174,6 +174,8 @@ static const CGFloat  WAWA_CIRCLE_ANGLE = 360.0f/WAWALOADINCOUNT;
 
 - (void)setLoaingValue:(CGFloat)value
 {
+    NSLog(@"setLoaingValue = %f",value);
+    
     if (_headLoading)
     {
         return;

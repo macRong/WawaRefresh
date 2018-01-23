@@ -55,9 +55,10 @@ static char WawaHeadRefreshViewKey;
     WawaHeadRefreshView *headView = [[WawaHeadRefreshView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, WAWALOADINGHEIGHT)];
     headView.scrollView = self;
     headView.startRefreshActionHandler = actionHandler;
+//    headView.backgroundColor = [UIColor blueColor];
     [self addSubview:headView];
     [self sendSubviewToBack:headView];
-    
+
     self.wawaHeadRefresh = headView;
     self.showHeadRefresh = YES;
 }
@@ -123,7 +124,7 @@ static char WawaHeadRefreshViewKey;
             return;
         }
         
-        NSLog(@"pin.y =%f",pin.y);
+//        NSLog(@"pin.y =%f",pin.y);
         // set headView postion
         [self setHeadViewPoisition:pin.y];
 
@@ -154,33 +155,45 @@ static char WawaHeadRefreshViewKey;
 {
     if (self.loadingView.headLoading)
     {
+        [self.loadingView stopAnimation];
+
         [UIView animateWithDuration:0.4f animations:^{
+            self.transform =  CGAffineTransformScale(self.transform, 0.3f, 0.3f);
             UIEdgeInsets contentInset = self.scrollView.contentInset;
             contentInset.top -= WAWALOADINGHEIGHT;
             self.scrollView.contentInset = contentInset;
-            _loadingView.transform =  CGAffineTransformScale(_loadingView.transform, 0.2f, 0.2f);
+            [self setSelfOffSetY:self.scrollView.contentOffset.y];
+            
+        }completion:^(BOOL finished) {
+            [self resetLoadView];
         }];
     }
-    
-    [self resetLoadView];
 }
 
 - (void)resetLoadView
 {
     if (_loadingView)
     {
-        [_loadingView stopAnimation];
-
         [_loadingView removeFromSuperview];
         _loadingView = nil;
     }
+    
+    self.transform = CGAffineTransformIdentity;
 }
 
 
 #pragma mark -############################# Private ############################################################
 
+- (void)setSelfOffSetY:(CGFloat)y
+{
+    CGRect oriRect = self.frame;
+    oriRect.origin.y =  y +  self.scrollView.contentInset.top;
+    self.frame = oriRect;
+}
+
 - (void)setHeadViewPoisition:(CGFloat)y
 {
+    /** warning */
     if (y == -WAWALOADINGHEIGHT)
     {
         if (!self.loadingView.headLoading)
@@ -194,13 +207,12 @@ static char WawaHeadRefreshViewKey;
         CGRect oriRect = self.frame;
         oriRect.origin.y =  y +  self.scrollView.contentInset.top - WAWALOADINGHEIGHT;
         self.frame = oriRect;
-        
+        NSLog(@"111111111111111111111111");
          return;
     }
     
-    CGRect oriRect = self.frame;
-    oriRect.origin.y =  y +  self.scrollView.contentInset.top;
-    self.frame = oriRect;
+    NSLog(@"22222222222222222");
+    [self setSelfOffSetY:y];
 }
 
 - (void)setLoadingPoint:(CGFloat)y
@@ -237,7 +249,10 @@ static char WawaHeadRefreshViewKey;
     if (!_loadingView)
     {
         CGFloat loadingView_W_H = 28.0f;
-        WawaLoadingView *view = [[WawaLoadingView alloc]initWithFrame:CGRectMake(self.center.x-loadingView_W_H/2,(WAWALOADINGHEIGHT-loadingView_W_H)/2-loadingView_W_H/5,loadingView_W_H, loadingView_W_H)];
+        WawaLoadingView *view = [[WawaLoadingView alloc]initWithFrame:CGRectMake(self.center.x-loadingView_W_H/2,
+                                                                                 (WAWALOADINGHEIGHT-loadingView_W_H)/2-loadingView_W_H/5,
+                                                                                 loadingView_W_H,
+                                                                                 loadingView_W_H)];
         [self addSubview:view];
 
         _loadingView = view;
