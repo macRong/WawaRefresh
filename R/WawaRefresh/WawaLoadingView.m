@@ -175,7 +175,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
 
 - (void)setLoaingValue:(CGFloat)value
 {
-    NSLog(@"setLoaingValue = %f",value);
+//    NSLog(@"setLoaingValue = %f",value);
     
     if (_isLoading)
     {

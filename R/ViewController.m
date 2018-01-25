@@ -10,7 +10,6 @@
 #import "WawaLoadingView.h"
 #import "A.h"
 
-
 @interface ViewController ()
 <
 UITableViewDataSource,
@@ -42,11 +41,12 @@ UITableViewDelegate
     [self.tableView wawaFootRefresh:^{
         [self foot];
     }];
+
+
+//    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 33)];
+//                                                         fot.backgroundColor = [UIColor yellowColor];
+//                                                         self.tableView.tableFooterView = fot;
     
-    
-    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 33)];
-                                                         fot.backgroundColor = [UIColor yellowColor];
-                                                         self.tableView.tableFooterView = fot;
     
 //    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 //    indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;

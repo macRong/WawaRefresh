@@ -10,13 +10,13 @@
 
 @class WawaHeadRefreshView;
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
     WawaHeadRefreshPositionTop,
     WawaHeadRefreshPositionToBack
 };
 
-
-#pragma mark -############################# UIScrollView+WawaHeadRefresh #################################################
 
 @interface UIScrollView (WawaHeadRefresh)
 
@@ -28,10 +28,10 @@ typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
 - (void)wawaHeadRefreshWithpostion:(WawaHeadRefreshPosition)position actionHandler:(dispatch_block_t)actionHandler;
 
 @end
+NS_ASSUME_NONNULL_END
 
 
-#pragma mark -############################# WawaHeadRefreshView #################################################
-
+NS_ASSUME_NONNULL_BEGIN
 @interface WawaHeadRefreshView: UIView
 
 @property (nonatomic, assign, readonly) BOOL isLoading;
@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
 - (void)stopAnimation;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 
 
