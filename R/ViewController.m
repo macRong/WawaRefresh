@@ -49,7 +49,8 @@ UITableViewDelegate
 //        NSLog(@"bbbbbb %@",self.tableView.wawaHeadRefresh);
 //        [self.tableView.wawaHeadRefresh stopAnimation];
 //    });
-//    
+//
+    
     
 //    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 //    indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
