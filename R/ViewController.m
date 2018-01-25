@@ -51,7 +51,6 @@ UITableViewDelegate
     });
 
     
-    
 //    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 //    indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
 //    indicator.frame = CGRectMake(0, 0, 190, 190);
