@@ -40,16 +40,13 @@ UITableViewDelegate
     }];
     
     [self.tableView wawaFootRefresh:^{
-       
         [self foot];
     }];
     
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"bbbbbb %@",self.tableView.wawaHeadRefresh);
-        [self.tableView.wawaHeadRefresh stopAnimation];
-    });
-
+    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 33)];
+                                                         fot.backgroundColor = [UIColor yellowColor];
+                                                         self.tableView.tableFooterView = fot;
     
 //    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 //    indicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
@@ -90,7 +87,12 @@ UITableViewDelegate
 {
     UITableViewCell *defaultCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"MP_search_defaultCell"];
 //    defaultCell.backgroundColor = [UIColor purpleColor];
-    defaultCell.textLabel.text = [NSString stringWithFormat:@"%ld",(long)indexPath.row];
+
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
+    NSDate *datenow = [NSDate date];
+    NSString *nowtimeStr = [formatter stringFromDate:datenow];
+    defaultCell.textLabel.text = nowtimeStr;
     
     return defaultCell;
 }

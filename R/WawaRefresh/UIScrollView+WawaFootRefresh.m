@@ -25,6 +25,7 @@ static char WawaFootRefreshViewKey;
 
 @implementation UIScrollView (WawaFootRefresh)
 @dynamic wawaFootRefresh;
+@dynamic isShowFootRefresh;
 
 - (void)wawaFootRefresh:(dispatch_block_t)actionHandler
 {
@@ -38,6 +39,10 @@ static char WawaFootRefreshViewKey;
     footRefreshView.scrollView = self;
     footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
+    
+    self.wawaFootRefresh = footRefreshView;
+    self.wawaFootRefresh.footRefreshPosition = position;
+    self.isShowFootRefresh = YES;
 }
 
 
@@ -50,9 +55,15 @@ static char WawaFootRefreshViewKey;
     [self didChangeValueForKey:@"WawaFootRefreshView"];
 }
 
-- (WawaHeadRefreshView *)wawaHeadRefresh
+- (WawaFootRefreshView *)wawaFootRefresh
 {
     return objc_getAssociatedObject(self, &WawaFootRefreshViewKey);
+}
+
+- (void)setIsShowFootRefresh:(BOOL)isShowFootRefresh
+{
+    [self addObserver:self.wawaFootRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    [self addObserver:self.wawaFootRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 @end
@@ -66,5 +77,51 @@ static char WawaFootRefreshViewKey;
 {
     
 }
+
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if([keyPath isEqualToString:@"contentOffset"])
+    {
+        CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
+
+        NSLog(@" ==== point = %@",NSStringFromCGPoint(pin));
+    }
+    else if([keyPath isEqualToString:@"contentSize"])
+    {
+        [self layoutSubviews];
+        
+        CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
+        
+        [self setFootPosition:yOrigin];
+        //        self.frame = CGRectMake(0, yOrigin, self.bounds.size.width, SVPullToRefreshViewHeight);
+        NSLog(@"------------contsize=%f",yOrigin);
+    }
+    else if([keyPath isEqualToString:@"frame"])
+    {
+        [self layoutSubviews];
+    }
+}
+
+
+#pragma mark -############################# Private ###########################################
+
+- (void)layoutSubviews
+{
+    
+}
+
+- (void)setFootPosition:(CGFloat)value
+{
+    if (self.footRefreshPosition == WawaFootRefreshPositionContentBottom)
+    {
+        CGRect rect = self.frame;
+        rect.origin.y = self.scrollView.contentSize.height;
+        self.frame = rect;
+    }
+
+}
+
 
 @end

@@ -12,13 +12,14 @@
 static const CGFloat   WAWAFOOTVIEWHEIGHT = 64.0f;
 
 typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
-    WawaFootRefreshPositionBottom,
-    WawaFootRefreshPositionScrollViewBottom
+    WawaFootRefreshPositionScrollViewBottom,
+    WawaFootRefreshPositionContentBottom
 };
 
 
 @interface UIScrollView (WawaFootRefresh)
 
+@property (nonatomic, assign, readonly) BOOL isShowFootRefresh;
 @property (nonatomic, strong, readonly) WawaFootRefreshView *wawaFootRefresh;
 
 - (void)wawaFootRefresh:(dispatch_block_t)actionHandler;
@@ -30,6 +31,9 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 
 @interface WawaFootRefreshView: UIView
 
+@property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
+
 - (void)stopAnimation;
+
 
 @end
