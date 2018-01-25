@@ -74,7 +74,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
     NSTimer   *_timer; // ?
     
     BOOL _isGraphicsFinish;
-    BOOL _headLoading;
+    BOOL _isLoading;
 }
 
 @property (nonatomic, strong) NSMutableArray *startmArray;
@@ -117,7 +117,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
     _line_Width = w > h ? h/15.0f : w/15.0f;
     
     _preValue = CGFLOAT_MIN;
-    _headLoading = NO;
+    _isLoading = NO;
     [self transformHorizontal];
 }
 
@@ -177,7 +177,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
 {
     NSLog(@"setLoaingValue = %f",value);
     
-    if (_headLoading)
+    if (_isLoading)
     {
         return;
     }
@@ -274,9 +274,9 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
 
 - (void)bombLoading
 {
-    if (!_headLoading)
+    if (!_isLoading)
     {
-        _headLoading = YES;
+        _isLoading = YES;
 
         if (self.loadingBlock)
         {
@@ -389,7 +389,6 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
     NSValue *colors_value = [NSValue valueWithBytes:&colors objCType:@encode(struct WaWa_Colors)];
     [self.colorsmArray addObject:colors_value];
 }
-
 
 - (void)transformHorizontal
 {

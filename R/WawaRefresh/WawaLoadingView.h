@@ -21,10 +21,10 @@ typedef struct CG_BOXABLE WaWa_Colors WaWa_Colors;
 NS_ASSUME_NONNULL_BEGIN
 @interface WawaLoadingView : UIView
 
-@property (nonatomic, copy) dispatch_block_t loadingBlock;
-@property (nonatomic, assign, readonly) BOOL headLoading;
-
 + (instancetype)new NS_UNAVAILABLE;
+
+@property (nonatomic, copy) dispatch_block_t loadingBlock;
+@property (nonatomic, assign, readonly) BOOL isLoading;
 
 /** @value: 0-12 */
 - (void)setLoaingValue:(CGFloat)value;
@@ -37,8 +37,7 @@ NS_ASSUME_NONNULL_END
 
 
 
-
-/** 参考:
+/** Example:
  
  CGFloat PreValue = CGFLOAT_MIN;
  - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -50,7 +49,7 @@ NS_ASSUME_NONNULL_END
      }
  
      CGFloat currentHeight = fabs(PreValue - value);
-     [_rView setLoaingValue:currentHeight*12/WAWALOADINGHEIGHT];
+     [loadingView setLoaingValue:currentHeight*12/WAWALOADINGHEIGHT];
  }
 
  */

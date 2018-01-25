@@ -39,6 +39,11 @@ UITableViewDelegate
         [self ok];
     }];
     
+    [self.tableView wawaFootRefresh:^{
+       
+        [self foot];
+    }];
+    
 //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //        NSLog(@"bbbbbb %@",self.tableView.wawaHeadRefresh);
 //        [self.tableView.wawaHeadRefresh stopAnimation];
@@ -63,7 +68,15 @@ UITableViewDelegate
 {
     NSLog(@"💥");
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        BOOL s = self.tableView.wawaHeadRefresh.isLoading;
         [self.tableView.wawaHeadRefresh stopAnimation];
+    });
+}
+
+- (void)foot
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
     });
 }
 
