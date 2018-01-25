@@ -36,7 +36,7 @@ static char WawaFootRefreshViewKey;
     WawaFootRefreshView *footRefreshView = [[WawaFootRefreshView alloc]initWithFrame:CGRectMake(0, self.contentSize.height, self.bounds.size.width, WAWAFOOTVIEWHEIGHT)];
     footRefreshView.startRefreshActionHandler = actionHandler;
     footRefreshView.scrollView = self;
-    footRefreshView.backgroundColor = [UIColor redColor]; 
+    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
 }
 
@@ -54,7 +54,6 @@ static char WawaFootRefreshViewKey;
 {
     return objc_getAssociatedObject(self, &WawaFootRefreshViewKey);
 }
-
 
 @end
 
