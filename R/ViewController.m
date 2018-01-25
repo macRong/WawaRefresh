@@ -45,11 +45,11 @@ UITableViewDelegate
     }];
     
     
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        NSLog(@"bbbbbb %@",self.tableView.wawaHeadRefresh);
-//        [self.tableView.wawaHeadRefresh stopAnimation];
-//    });
-//
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"bbbbbb %@",self.tableView.wawaHeadRefresh);
+        [self.tableView.wawaHeadRefresh stopAnimation];
+    });
+
     
     
 //    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
