@@ -42,10 +42,9 @@ UITableViewDelegate
         [self foot];
     }];
 
-
-//    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 33)];
-//                                                         fot.backgroundColor = [UIColor yellowColor];
-//                                                         self.tableView.tableFooterView = fot;
+    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 13)];
+                                                         fot.backgroundColor = [UIColor yellowColor];
+                                                         self.tableView.tableFooterView = fot;
     
     
 //    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -80,7 +79,7 @@ UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 10;
+    return 28;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

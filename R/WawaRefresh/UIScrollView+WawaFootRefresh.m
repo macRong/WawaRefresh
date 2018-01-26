@@ -99,17 +99,24 @@ static char WawaFootRefreshViewKey;
     {
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
 
+        // -32.0f
         if (pin.y < -WAWAFOOTVIEWHEIGHT)
         {
             return;
         }
         else
         {
-            if (_activityIndicatorView)
+            if (pin.y <= -WAWAFOOTVIEWHEIGHT/2)
             {
-                [self.activityIndicatorView startAnimating];
+                NSLog(@"---- 💥");
+                if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
+                {
+                    [self.activityIndicatorView startAnimating];
+                }
             }
         }
+        
+        [self setSelfOffSetY:pin.y];
         
         NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
     }
@@ -118,8 +125,8 @@ static char WawaFootRefreshViewKey;
         [self layoutSubviews];
         
         CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-        
         [self setFootPosition:yOrigin];
+        
         //        self.frame = CGRectMake(0, yOrigin, self.bounds.size.width, SVPullToRefreshViewHeight);
         NSLog(@"------------contsize=%f",yOrigin);
     }
@@ -129,12 +136,20 @@ static char WawaFootRefreshViewKey;
     }
 }
 
+- (void)setSelfOffSetY:(CGFloat)y
+{
+    CGRect oriRect = self.frame;
+    CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
+    oriRect.origin.y =  yOrigin  + self.scrollView.contentInset.bottom;
+    self.frame = oriRect;
+}
+
 
 #pragma mark -############################# Private ###########################################
 
 - (void)layoutSubviews
 {
-    
+    self.activityIndicatorView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
 }
 
 - (void)setFootPosition:(CGFloat)value
@@ -148,7 +163,8 @@ static char WawaFootRefreshViewKey;
     else if (self.footRefreshPosition == WawaFootRefreshPositionScrollViewBottom)
     {
         CGRect rect = self.frame;
-        rect.origin.y = CGRectGetHeight(self.scrollView.bounds) - self.scrollView.contentInset.top + self.scrollView.contentInset.bottom;
+//       rect.origin.y = CGRectGetHeight(self.scrollView.bounds) - self.scrollView.contentInset.top + self.scrollView.contentInset.bottom;
+        rect.origin.y = value - self.scrollView.contentInset.top + self.scrollView.contentInset.bottom;
         self.frame = rect;
     }
 }
@@ -160,8 +176,8 @@ static char WawaFootRefreshViewKey;
 {
     if(!_activityIndicatorView)
     {
-        UIActivityIndicatorView *tempActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-        tempActivityIndicatorView.frame = CGRectMake(self.center.x-28.0f/2, 0, 28.0f, 28.0f);
+        UIActivityIndicatorView *tempActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        tempActivityIndicatorView.frame = CGRectMake(self.center.x-28.0f/2, (WAWAFOOTVIEWHEIGHT-28.0f)/2, 28.0f, 28.0f);
         tempActivityIndicatorView.hidesWhenStopped = YES;
         [self addSubview:tempActivityIndicatorView];
         _activityIndicatorView = tempActivityIndicatorView;
