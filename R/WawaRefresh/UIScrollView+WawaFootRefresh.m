@@ -92,6 +92,7 @@ static char WawaFootRefreshViewKey;
 {
     if (self.activityIndicatorView.isAnimating)
     {
+        bo = NO;
         NSLog(@"+++++++++ stopAnimating");
         [self.activityIndicatorView stopAnimating];
     }
@@ -111,8 +112,6 @@ static char WawaFootRefreshViewKey;
         
         if (self.scrollView.contentSize.height - fabs(pin.y) - self.scrollView.bounds.size.height <= self.distanceBottom)
         {
-            NSLog(@"===== 💥");
-
             if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
             {
                 [self bomb];
@@ -145,9 +144,22 @@ static char WawaFootRefreshViewKey;
 
 
 #pragma mark -Private
-
+BOOL bo;
 - (void)bomb
 {
+    NSLog(@" 💥 ");
+    // ?
+    if (!bo)
+    {
+//        [UIView animateWithDuration:0.2 animations:^{
+//            UIEdgeInsets contentInset = self.scrollView.contentInset;
+//            contentInset.bottom += WAWAFOOTVIEWHEIGHT;
+//            self.scrollView.contentInset = contentInset;
+//        }];
+        
+        bo = YES;
+    }
+    
 
     [self.activityIndicatorView startAnimating];
 

@@ -179,7 +179,7 @@ static char WawaHeadRefreshViewKey;
 {
     if (_loadingView)
     {
-        [self.loadingView stopAnimation];
+        [_loadingView stopAnimation];
 
         [_loadingView removeFromSuperview];
         _loadingView = nil;
