@@ -41,8 +41,10 @@ UITableViewDelegate
     [self.tableView wawaFootRefresh:^{
         [self foot];
     }];
+    
+    self.tableView.wawaFootRefresh.distanceBottom = 64.0f;
 
-    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 13)];
+    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 88.0f)];
                                                          fot.backgroundColor = [UIColor yellowColor];
                                                          self.tableView.tableFooterView = fot;
     
@@ -91,7 +93,7 @@ UITableViewDelegate
     [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
     NSDate *datenow = [NSDate date];
     NSString *nowtimeStr = [formatter stringFromDate:datenow];
-    defaultCell.textLabel.text = nowtimeStr;
+    defaultCell.textLabel.text = [NSString stringWithFormat:@"【%ld】 %@",(long)indexPath.row,nowtimeStr];
     
     return defaultCell;
 }

@@ -103,20 +103,21 @@ static char WawaFootRefreshViewKey;
     {
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         
-        if (pin.y <= -WAWALOADINGHEIGHT) // ? 要优化
+        if (pin.y <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
         {
             return;
         }
         
-        if (self.scrollView.contentSize.height - fabs(pin.y) <= self.scrollView.bounds.size.height)
+        
+        if (self.scrollView.contentSize.height - fabs(pin.y) - self.scrollView.bounds.size.height <= self.distanceBottom)
         {
-            NSLog(@"符合+");
+            NSLog(@"===== 💥");
+
             if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
             {
                 [self bomb];
             }
         }
-        
 //        NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
     }
     else if([keyPath isEqualToString:@"contentSize"])
@@ -147,7 +148,6 @@ static char WawaFootRefreshViewKey;
 
 - (void)bomb
 {
-    NSLog(@"===== 💥");
 
     [self.activityIndicatorView startAnimating];
 

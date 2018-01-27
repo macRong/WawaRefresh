@@ -25,5 +25,7 @@ static const CGFloat   WAWALOADINGHEIGHT = 64.0f;
  5. 多次创建 销毁对象
  6. kvo 创建标识 和销毁
  7. 来回小滑动 有闪动bug
+ 8. 在下拉loading中，符合上拉条件是否要执行？
+ 9. Inset 各种情况测试
  
  */

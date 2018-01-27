@@ -38,7 +38,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
 
-///////////////////////// extent ////////////////////////////////////////////////
+
+///=================================================================================================
+/// @name Extent
+///=================================================================================================
+
+/** 距离底部还剩多少距离开始加载. bottomDistance default: 0 .*/
+@property (nonatomic, assign) CGFloat distanceBottom;
+
+/**  .*/
 @property (nonatomic, readwrite) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
 
 - (void)stopAnimation;
