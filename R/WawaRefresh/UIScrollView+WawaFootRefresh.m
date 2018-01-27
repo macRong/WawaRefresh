@@ -11,7 +11,7 @@
 
 static char WawaFootRefreshViewKey;
 
-#pragma mark -############################# WawaFootRefreshView ##########################################
+#pragma mark -WawaFootRefreshView
 
 @interface WawaFootRefreshView()
 
@@ -21,7 +21,7 @@ static char WawaFootRefreshViewKey;
 
 @end
 
-#pragma mark -############################# UIScrollView+WawaFootRefresh ##################################
+#pragma mark -UIScrollView+WawaFootRefresh
 
 @implementation UIScrollView (WawaFootRefresh)
 @dynamic wawaFootRefresh;
@@ -47,7 +47,7 @@ static char WawaFootRefreshViewKey;
 }
 
 
-#pragma mark -############################# Setter/Getter #################################################
+#pragma mark -Setter/Getter
 
 - (void)setWawaFootRefresh:(WawaFootRefreshView *)wawaFootRefresh
 {
@@ -70,7 +70,7 @@ static char WawaFootRefreshViewKey;
 @end
 
 
-#pragma mark -############################# WawaFootRefreshView ###########################################
+#pragma mark -WawaFootRefreshView
 
 @implementation WawaFootRefreshView
 
@@ -151,7 +151,7 @@ static char WawaFootRefreshViewKey;
 }
 
 
-#pragma mark -############################# Private ###########################################
+#pragma mark -Private
 
 - (void)setScrollViewOffsetY:(CGFloat)y
 {
@@ -170,11 +170,6 @@ static char WawaFootRefreshViewKey;
     self.frame = oriRect;
 }
 
-- (void)layoutSubviews
-{
-    self.activityIndicatorView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-}
-
 - (void)setFootScrollPosition:(CGFloat)value
 {
     CGRect rect = self.frame;
@@ -190,8 +185,13 @@ static char WawaFootRefreshViewKey;
     self.frame = rect;
 }
 
+- (void)layoutSubviews
+{
+    self.activityIndicatorView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+}
 
-#pragma mark -############################# Setter/Getter #####################################
+
+#pragma mark -Setter/Getter
 
 - (UIActivityIndicatorView *)activityIndicatorView
 {
