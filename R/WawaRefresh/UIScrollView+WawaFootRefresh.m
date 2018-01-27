@@ -90,7 +90,11 @@ static char WawaFootRefreshViewKey;
 
 - (void)stopAnimation
 {
-    
+    if (self.activityIndicatorView.isAnimating)
+    {
+        NSLog(@"+++++++++ stopAnimating");
+        [self.activityIndicatorView stopAnimating];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -98,34 +102,22 @@ static char WawaFootRefreshViewKey;
     if([keyPath isEqualToString:@"contentOffset"])
     {
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
-
-        // -32.0f
-        if (pin.y < -WAWAFOOTVIEWHEIGHT)
+        
+        if (pin.y <= -WAWALOADINGHEIGHT) // ? 要优化
         {
             return;
         }
-        else
+        
+        if (self.scrollView.contentSize.height - fabs(pin.y) <= self.scrollView.bounds.size.height)
         {
-            if (pin.y <= -WAWAFOOTVIEWHEIGHT/2)
+            NSLog(@"符合+");
+            if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
             {
-                NSLog(@"---- 💥");
-                if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
-                {
-                    [self.activityIndicatorView startAnimating];
-                }
+                [self bomb];
             }
         }
         
-//        if (self.footRefreshPosition == WawaFootRefreshPositionScrollViewBottom)
-//        {
-//            [self setScrollViewOffsetY:pin.y];
-//        }
-//        else
-//        {
-//            [self setContentOffSetY:pin.y];
-//        }
-        
-        NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
+//        NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
     }
     else if([keyPath isEqualToString:@"contentSize"])
     {
@@ -152,6 +144,18 @@ static char WawaFootRefreshViewKey;
 
 
 #pragma mark -Private
+
+- (void)bomb
+{
+    NSLog(@"===== 💥");
+
+    [self.activityIndicatorView startAnimating];
+
+    if (self.startRefreshActionHandler)
+    {
+        self.startRefreshActionHandler();
+    }
+}
 
 - (void)setScrollViewOffsetY:(CGFloat)y
 {
@@ -211,6 +215,5 @@ static char WawaFootRefreshViewKey;
 {
     return self.activityIndicatorView.activityIndicatorViewStyle;
 }
-
 
 @end

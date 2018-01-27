@@ -215,11 +215,9 @@ static char WawaHeadRefreshViewKey;
         CGRect oriRect = self.frame;
         oriRect.origin.y =  y +  self.scrollView.contentInset.top - WAWALOADINGHEIGHT;
         self.frame = oriRect;
-//        NSLog(@"111111111111111111111111");
          return;
     }
     
-//    NSLog(@"22222222222222222");
     [self setSelfOffSetY:y];
 }
 
