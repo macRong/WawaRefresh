@@ -19,6 +19,9 @@ static char WawaFootRefreshViewKey;
 @property (nonatomic, weak) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
 
+- (void)resetScrollViewInsets;
+
+
 @end
 
 #pragma mark -UIScrollView+WawaFootRefresh
@@ -38,8 +41,9 @@ static char WawaFootRefreshViewKey;
     WawaFootRefreshView *footRefreshView = [[WawaFootRefreshView alloc]initWithFrame:CGRectMake(0, originY, self.bounds.size.width, WAWAFOOTVIEWHEIGHT)];
     footRefreshView.startRefreshActionHandler = actionHandler;
     footRefreshView.scrollView = self;
-    footRefreshView.backgroundColor = [UIColor redColor];
+//    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
+
     
     self.wawaFootRefresh = footRefreshView;
     self.wawaFootRefresh.footRefreshPosition = position;
@@ -65,6 +69,8 @@ static char WawaFootRefreshViewKey;
 {
     [self addObserver:self.wawaFootRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self.wawaFootRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
+    
+    [self.wawaFootRefresh resetScrollViewInsets];
 }
 
 @end
@@ -144,6 +150,16 @@ static char WawaFootRefreshViewKey;
 
 
 #pragma mark -Private
+
+- (void)resetScrollViewInsets
+{
+    [UIView animateWithDuration:0.2 animations:^{
+        UIEdgeInsets contentInset = self.scrollView.contentInset;
+        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
+        self.scrollView.contentInset = contentInset;
+    }];
+}
+
 BOOL bo;
 - (void)bomb
 {
@@ -151,11 +167,7 @@ BOOL bo;
     // ?
     if (!bo)
     {
-//        [UIView animateWithDuration:0.2 animations:^{
-//            UIEdgeInsets contentInset = self.scrollView.contentInset;
-//            contentInset.bottom += WAWAFOOTVIEWHEIGHT;
-//            self.scrollView.contentInset = contentInset;
-//        }];
+
         
         bo = YES;
     }
@@ -190,14 +202,14 @@ BOOL bo;
 {
     CGRect rect = self.frame;
     CGFloat sOrigingY = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? 0 : self.scrollView.contentInset.top;
-    rect.origin.y = value -sOrigingY + self.scrollView.contentInset.bottom;
+    rect.origin.y = value -sOrigingY + self.scrollView.contentInset.bottom /* ? */ - WAWAFOOTVIEWHEIGHT;
     self.frame = rect;
 }
 
 - (void)setFootContentPosition:(CGFloat)value
 {
     CGRect rect = self.frame;
-    rect.origin.y = self.scrollView.contentSize.height;
+    rect.origin.y = self.scrollView.contentSize.height /* ? */ - WAWAFOOTVIEWHEIGHT;
     self.frame = rect;
 }
 
