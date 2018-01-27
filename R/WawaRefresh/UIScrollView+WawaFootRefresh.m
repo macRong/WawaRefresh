@@ -116,7 +116,14 @@ static char WawaFootRefreshViewKey;
             }
         }
         
-        [self setSelfOffSetY:pin.y];
+//        if (self.footRefreshPosition == WawaFootRefreshPositionScrollViewBottom)
+//        {
+//            [self setScrollViewOffsetY:pin.y];
+//        }
+//        else
+//        {
+//            [self setContentOffSetY:pin.y];
+//        }
         
         NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
     }
@@ -124,11 +131,18 @@ static char WawaFootRefreshViewKey;
     {
         [self layoutSubviews];
         
-        CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-        [self setFootPosition:yOrigin];
-        
-        //        self.frame = CGRectMake(0, yOrigin, self.bounds.size.width, SVPullToRefreshViewHeight);
-        NSLog(@"------------contsize=%f",yOrigin);
+        if (self.footRefreshPosition == WawaFootRefreshPositionScrollViewBottom)
+        {
+            CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
+            [self setFootScrollPosition:yOrigin];
+            NSLog(@"------------contsize=%f",yOrigin);
+        }
+        else
+        {
+            CGFloat yOrigin =  MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
+            [self setFootContentPosition:yOrigin];
+            NSLog(@"------------contsize=%f",yOrigin);
+        }
     }
     else if([keyPath isEqualToString:@"frame"])
     {
@@ -136,37 +150,44 @@ static char WawaFootRefreshViewKey;
     }
 }
 
-- (void)setSelfOffSetY:(CGFloat)y
+
+#pragma mark -############################# Private ###########################################
+
+- (void)setScrollViewOffsetY:(CGFloat)y
 {
     CGRect oriRect = self.frame;
     CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-    oriRect.origin.y =  yOrigin  + self.scrollView.contentInset.bottom;
+    CGFloat contentTop = 0 ;
+    oriRect.origin.y =  yOrigin  + self.scrollView.contentInset.bottom + contentTop;
     self.frame = oriRect;
 }
 
-
-#pragma mark -############################# Private ###########################################
+- (void)setContentOffSetY:(CGFloat)y
+{
+    CGRect oriRect = self.frame;
+    CGFloat yOrigin = MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
+    oriRect.origin.y =  yOrigin  + self.scrollView.contentInset.bottom - self.scrollView.contentInset.top;
+    self.frame = oriRect;
+}
 
 - (void)layoutSubviews
 {
     self.activityIndicatorView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
 }
 
-- (void)setFootPosition:(CGFloat)value
+- (void)setFootScrollPosition:(CGFloat)value
 {
-    if (self.footRefreshPosition == WawaFootRefreshPositionContentBottom)
-    {
-        CGRect rect = self.frame;
-        rect.origin.y = self.scrollView.contentSize.height;
-        self.frame = rect;
-    }
-    else if (self.footRefreshPosition == WawaFootRefreshPositionScrollViewBottom)
-    {
-        CGRect rect = self.frame;
-//       rect.origin.y = CGRectGetHeight(self.scrollView.bounds) - self.scrollView.contentInset.top + self.scrollView.contentInset.bottom;
-        rect.origin.y = value - self.scrollView.contentInset.top + self.scrollView.contentInset.bottom;
-        self.frame = rect;
-    }
+    CGRect rect = self.frame;
+    CGFloat sOrigingY = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? 0 : self.scrollView.contentInset.top;
+    rect.origin.y = value -sOrigingY + self.scrollView.contentInset.bottom;
+    self.frame = rect;
+}
+
+- (void)setFootContentPosition:(CGFloat)value
+{
+    CGRect rect = self.frame;
+    rect.origin.y = self.scrollView.contentSize.height;
+    self.frame = rect;
 }
 
 

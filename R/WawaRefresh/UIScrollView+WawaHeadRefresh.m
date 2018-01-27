@@ -160,7 +160,7 @@ static char WawaHeadRefreshViewKey;
 
 - (void)stopAnimation
 {
-    if (self.loadingView.isLoading)
+    if (self.loadingView.isAnimation)
     {
         [UIView animateWithDuration:0.4f animations:^{
             self.transform =  CGAffineTransformScale(CGAffineTransformIdentity, 0.3f, 0.3f);
@@ -204,13 +204,13 @@ static char WawaHeadRefreshViewKey;
     /** warning */
     if (y == -WAWALOADINGHEIGHT)
     {
-        if (!self.loadingView.isLoading)
+        if (!self.loadingView.isAnimation)
         {
             [self resetLoadView];
         }
     }
     
-    if (self.loadingView.isLoading)
+    if (self.loadingView.isAnimation)
     {
         CGRect oriRect = self.frame;
         oriRect.origin.y =  y +  self.scrollView.contentInset.top - WAWALOADINGHEIGHT;
@@ -225,7 +225,7 @@ static char WawaHeadRefreshViewKey;
 
 - (void)setLoadingPoint:(CGFloat)y
 {
-    if (self.loadingView.isLoading)
+    if (self.loadingView.isAnimation)
     {
         return;
     }

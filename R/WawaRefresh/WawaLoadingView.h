@@ -21,15 +21,31 @@ typedef struct CG_BOXABLE WaWa_Colors WaWa_Colors;
 NS_ASSUME_NONNULL_BEGIN
 @interface WawaLoadingView : UIView
 
-+ (instancetype)new NS_UNAVAILABLE;
+#pragma mark -Attribute
+///=============================================================================
+/// @name Attribute
+///=============================================================================
 
+/**  .*/
 @property (nonatomic, copy) dispatch_block_t loadingBlock;
-@property (nonatomic, assign, readonly) BOOL isLoading;
+
+/**  .*/
+@property (nonatomic, assign, readonly) BOOL isAnimation;
+
+
+#pragma mark -Initializer
+///=============================================================================
+/// @name Initializer
+///=============================================================================
+// NS_DESIGNATED_INITIALIZER
++ (instancetype)new NS_UNAVAILABLE;
 
 /** @value: 0-12 */
 - (void)setLoaingValue:(CGFloat)value;
 
 //- (void)startAnimation:(dispatch_block_t)block;
+
+/**  .*/
 - (void)stopAnimation;
 
 @end

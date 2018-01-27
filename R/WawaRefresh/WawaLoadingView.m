@@ -74,7 +74,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
     NSTimer   *_timer; // ?
     
     BOOL _isGraphicsFinish;
-    BOOL _isLoading;
+    BOOL _isAnimation;
 }
 
 @property (nonatomic, strong) NSMutableArray *startmArray;
@@ -84,8 +84,6 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
 @property (nonatomic, strong) NSMutableSet  *tempmSet;
 
 @end
-
-
 
 @implementation WawaLoadingView
 
@@ -117,7 +115,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
     _line_Width = w > h ? h/15.0f : w/15.0f;
     
     _preValue = CGFLOAT_MIN;
-    _isLoading = NO;
+    _isAnimation = NO;
     [self transformHorizontal];
 }
 
@@ -177,7 +175,7 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
 {
 //    NSLog(@"setLoaingValue = %f",value);
     
-    if (_isLoading)
+    if (_isAnimation)
     {
         return;
     }
@@ -274,9 +272,9 @@ id _Nullable wawa_getValidObjectFromArray(NSArray *_Nullable array, NSInteger in
 
 - (void)bombLoading
 {
-    if (!_isLoading)
+    if (!_isAnimation)
     {
-        _isLoading = YES;
+        _isAnimation = YES;
 
         if (self.loadingBlock)
         {

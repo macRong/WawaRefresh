@@ -11,7 +11,6 @@
 @class WawaHeadRefreshView;
 
 NS_ASSUME_NONNULL_BEGIN
-
 typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
     WawaHeadRefreshPositionTop,
     WawaHeadRefreshPositionToBack
@@ -28,10 +27,12 @@ typedef NS_ENUM(NSUInteger, WawaHeadRefreshPosition) {
 - (void)wawaHeadRefreshWithpostion:(WawaHeadRefreshPosition)position actionHandler:(dispatch_block_t)actionHandler;
 
 @end
+
 NS_ASSUME_NONNULL_END
 
 
 NS_ASSUME_NONNULL_BEGIN
+
 @interface WawaHeadRefreshView: UIView
 
 @property (nonatomic, assign, readonly) BOOL isLoading;
