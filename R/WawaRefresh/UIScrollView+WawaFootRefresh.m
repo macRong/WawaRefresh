@@ -232,6 +232,7 @@ BOOL bo;
         _activityIndicatorView = tempActivityIndicatorView;
     }
     
+    
     return _activityIndicatorView;
 }
 
