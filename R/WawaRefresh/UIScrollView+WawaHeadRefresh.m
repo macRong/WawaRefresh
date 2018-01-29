@@ -96,7 +96,7 @@ static char WawaHeadRefreshViewKey;
 
 @implementation WawaHeadRefreshView
 {
-    BOOL _isLoading;
+    BOOL _isAnimation;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -131,12 +131,14 @@ static char WawaHeadRefreshViewKey;
             return;
         }
         
-//        NSLog(@"pin.y =%f",pin.y);
-        // set headView postion
-        [self setHeadViewPoisition:pin.y];
-
-        // set loading value
-        [self setLoadingPoint:pin.y];
+//        if (self.scrollView.isDragging)
+    
+            // set headView postion
+            [self setHeadViewPoisition:pin.y];
+            
+            // set loading value
+            [self setLoadingPoint:pin.y];
+        
         
 //        NSLog(@" ==== point = %@,self.frame=%f ,l=%f",NSStringFromCGPoint(pin),self.frame.origin.y,currentHeight*12/WAWALOADINGHEIGHT-12);
     }
@@ -185,7 +187,7 @@ static char WawaHeadRefreshViewKey;
         _loadingView = nil;
     }
 
-    _isLoading = NO;
+    _isAnimation = NO;
     self.transform = CGAffineTransformIdentity;
 }
 
@@ -240,7 +242,7 @@ static char WawaHeadRefreshViewKey;
     __weak typeof(self)weakSelf = self;
     self.loadingView.loadingBlock = ^{
         typeof(weakSelf)SSelf = weakSelf;
-        _isLoading = YES;
+        _isAnimation = YES;
         SSelf.startRefreshActionHandler();
         
         [UIView animateWithDuration:0.2 animations:^{

@@ -21,6 +21,8 @@ UITableViewDelegate
 
 @property (nonatomic, strong) UITableView *tableView;
 
+@property (nonatomic, strong) NSMutableArray *rows;
+
 @end
 
 @implementation ViewController
@@ -32,17 +34,31 @@ UITableViewDelegate
     [self.view addSubview:self.tableView];
 
     self.view.backgroundColor = [UIColor brownColor];
+    [self initVar];
     
+    
+    __weak typeof(self)weakSelf = self;
     [self.tableView wawaHeadRefresh:^{
-        
-        [self ok];
+        typeof(weakSelf)Sself = weakSelf;
+        [Sself ok];
     }];
     
     [self.tableView wawaFootRefresh:^{
-        [self foot];
+        typeof(weakSelf)Sself = weakSelf;
+        [Sself foot];
     }];
     
-    self.tableView.wawaFootRefresh.distanceBottom = 64.0f;
+    self.tableView.wawaFootRefresh.distanceBottom = 264.0f;
+    
+    self.title = @"For iOS 6 & later";
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"Using NSAttributed String"];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,5)];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(6,12)];
+    [str addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(19,6)];
+    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial-BoldItalicMT" size:15.0] range:NSMakeRange(0, 5)];
+    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:15.0] range:NSMakeRange(6, 12)];
+    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier-BoldOblique" size:15.0] range:NSMakeRange(19, 6)];
+    self.tableView.wawaFootRefresh.attributedTitle = str;
 
     UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 88.0f)];
                                                          fot.backgroundColor = [UIColor yellowColor];
@@ -63,37 +79,59 @@ UITableViewDelegate
     
 }
 
+- (void)initVar
+{
+    self.rows = @[].mutableCopy;
+    
+    for (int i = 0; i <15; i++)
+    {
+        [self.rows addObject:[NSDate dateWithTimeIntervalSinceNow:-(i*30)]];
+    }
+}
+
 - (void)ok
 {
     NSLog(@"💥");
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        BOOL s = self.tableView.wawaHeadRefresh.isLoading;
+        
+        BOOL s = self.tableView.wawaHeadRefresh.isAnimation;
+        NSLog(@"s = %d",s);
         [self.tableView.wawaHeadRefresh stopAnimation];
     });
 }
 
 - (void)foot
 {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    [self insertRowAtBottom];
+}
+
+- (void)insertRowAtBottom
+{
+    __weak typeof(self)weakSelf = self;
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1.0f * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [weakSelf.tableView beginUpdates];
+        [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
+        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+        [weakSelf.tableView endUpdates];
+        
         [self.tableView.wawaFootRefresh stopAnimation];
     });
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 28;
+    return self.rows.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *defaultCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"MP_search_defaultCell"];
-//    defaultCell.backgroundColor = [UIColor purpleColor];
+    UITableViewCell *defaultCell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Wawa_defaultCell"];
 
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
-    NSDate *datenow = [NSDate date];
-    NSString *nowtimeStr = [formatter stringFromDate:datenow];
-    defaultCell.textLabel.text = [NSString stringWithFormat:@"【%ld】 %@",(long)indexPath.row,nowtimeStr];
+    NSDate *date = [self.rows objectAtIndex:indexPath.row];
+    NSString *formatterStr = [NSDateFormatter localizedStringFromDate:date dateStyle:NSDateFormatterNoStyle timeStyle:NSDateFormatterMediumStyle];
+    defaultCell.textLabel.text =  [NSString stringWithFormat:@"【%ld】 %@",(long)indexPath.row,formatterStr];
     
     return defaultCell;
 }

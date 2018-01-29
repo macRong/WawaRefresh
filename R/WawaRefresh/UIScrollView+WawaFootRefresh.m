@@ -19,6 +19,8 @@ static char WawaFootRefreshViewKey;
 @property (nonatomic, weak) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
 
+@property (nonatomic, assign, readwrite) BOOL isAnimation;
+
 - (void)resetScrollViewInsets;
 
 
@@ -50,6 +52,15 @@ static char WawaFootRefreshViewKey;
     self.isShowFootRefresh = YES;
 }
 
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+    if (self.superview && newSuperview == nil)
+    {
+        UIScrollView *scrollView = (UIScrollView *)self.superview;
+        [scrollView removeObserver:self forKeyPath:@"contentOffset"];
+        [scrollView removeObserver:self forKeyPath:@"contentSize"];
+    }
+}
 
 #pragma mark -Setter/Getter
 
@@ -106,7 +117,7 @@ static char WawaFootRefreshViewKey;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if([keyPath isEqualToString:@"contentOffset"])
+    if ([keyPath isEqualToString:@"contentOffset"])
     {
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         
@@ -115,8 +126,7 @@ static char WawaFootRefreshViewKey;
             return;
         }
         
-        
-        if (self.scrollView.contentSize.height - fabs(pin.y) - self.scrollView.bounds.size.height <= self.distanceBottom)
+        if (self.scrollView.contentSize.height - fabs(pin.y) - self.scrollView.bounds.size.height <= self.distanceBottom && self.scrollView.isDragging)
         {
             if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
             {
@@ -137,7 +147,7 @@ static char WawaFootRefreshViewKey;
         }
         else
         {
-            CGFloat yOrigin =  MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
+            CGFloat yOrigin = MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
             [self setFootContentPosition:yOrigin];
             NSLog(@"------------contsize=%f",yOrigin);
         }
@@ -149,7 +159,7 @@ static char WawaFootRefreshViewKey;
 }
 
 
-#pragma mark -Private
+#pragma mark - Private
 
 - (void)resetScrollViewInsets
 {
@@ -160,18 +170,9 @@ static char WawaFootRefreshViewKey;
     }];
 }
 
-BOOL bo;
 - (void)bomb
 {
     NSLog(@" 💥 ");
-    // ?
-    if (!bo)
-    {
-
-        
-        bo = YES;
-    }
-    
 
     [self.activityIndicatorView startAnimating];
 
@@ -240,5 +241,11 @@ BOOL bo;
 {
     return self.activityIndicatorView.activityIndicatorViewStyle;
 }
+
+- (BOOL)isAnimation
+{
+    return self.activityIndicatorView.isAnimating;
+}
+
 
 @end
