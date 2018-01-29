@@ -27,5 +27,7 @@ static const CGFloat   WAWALOADINGHEIGHT = 64.0f;
  7. 来回小滑动 有闪动bug
  8. 在下拉loading中，符合上拉条件是否要执行？
  9. Inset 各种情况测试
+ 10. 下拉大幅度， 松开会导致上拉时间 加判断
+ 11. 全局设置， 一旦设置全局有效（没有重置情况下） 单利config
  
  */

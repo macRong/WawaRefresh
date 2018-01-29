@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 
 
 NS_ASSUME_NONNULL_BEGIN
+
 #pragma mark -
 
 @interface UIScrollView (WawaFootRefresh)
@@ -32,18 +33,22 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 
+/// ------------------------------------------------------------------------------------------------
+
 
 NS_ASSUME_NONNULL_BEGIN
+
 #pragma mark -
 
 @interface WawaFootRefreshView: UIView
 
 @property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
 
-#pragma mark - EXtent
-///=================================================================================================
-/// @name Extent
-///=================================================================================================
+@property (nonatomic, assign, readonly) BOOL isAnimation;
+- (void)stopAnimation;
+
+
+#pragma mark - Extent
 
 /** 距离scrollView底部还剩多少距离开始加载. default: 0 .*/
 @property (nonatomic, assign) CGFloat distanceBottom;
@@ -52,9 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
 
 @property (nullable, nonatomic, strong) NSAttributedString *attributedTitle UI_APPEARANCE_SELECTOR;
-@property (nonatomic, assign, readonly) BOOL isAnimation;
 
-- (void)stopAnimation;
 
 @end
 

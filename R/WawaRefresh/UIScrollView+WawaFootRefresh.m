@@ -9,6 +9,13 @@
 #import "UIScrollView+WawaFootRefresh.h"
 #import <objc/runtime.h>
 
+typedef NS_ENUM(NSUInteger, WawaFootRefreshStatus)
+{
+    WawaFootRefreshStatusAnimation,
+    WawaFootRefreshStatusStoped,
+    WawaFootRefreshStatusDragged
+};
+
 static char WawaFootRefreshViewKey;
 
 #pragma mark -WawaFootRefreshView
@@ -20,6 +27,8 @@ static char WawaFootRefreshViewKey;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
 
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
+@property (nonatomic, assign) WawaFootRefreshStatus refreshState;
+
 
 - (void)resetScrollViewInsets;
 
@@ -120,18 +129,7 @@ static char WawaFootRefreshViewKey;
     {
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         
-        if (pin.y <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
-        {
-            return;
-        }
-        
-        if (self.scrollView.contentSize.height - fabs(pin.y) - self.scrollView.bounds.size.height <= self.distanceBottom && self.scrollView.isDragging)
-        {
-            if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
-            {
-                [self bomb];
-            }
-        }
+        [self scrollViewContentOffsetY:pin.y];
 //        NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
     }
     else if([keyPath isEqualToString:@"contentSize"])
@@ -151,14 +149,26 @@ static char WawaFootRefreshViewKey;
             NSLog(@"------------contsize=%f",yOrigin);
         }
     }
-    else if([keyPath isEqualToString:@"frame"])
-    {
-        [self layoutSubviews];
-    }
 }
 
 
 #pragma mark - Private
+
+- (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
+{
+    if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
+    {
+        return;
+    }
+    
+    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom && self.scrollView.isDragging)
+    {
+        if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
+        {
+            [self bomb];
+        }
+    }
+}
 
 - (void)resetScrollViewInsets
 {
@@ -254,5 +264,13 @@ static char WawaFootRefreshViewKey;
     }
 }
 
+- (void)setRefreshState:(WawaFootRefreshStatus)refreshState
+{
+    if (_refreshState == refreshState)
+    {
+        return;
+    }
+    
+}
 
 @end
