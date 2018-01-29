@@ -109,7 +109,6 @@ static char WawaFootRefreshViewKey;
 {
     if (self.activityIndicatorView.isAnimating)
     {
-        bo = NO;
         NSLog(@"+++++++++ stopAnimating");
         [self.activityIndicatorView stopAnimating];
     }
@@ -245,6 +244,14 @@ static char WawaFootRefreshViewKey;
 - (BOOL)isAnimation
 {
     return self.activityIndicatorView.isAnimating;
+}
+
+- (void)setAttributedTitle:(NSAttributedString *)attributedTitle
+{
+    if (_attributedTitle != attributedTitle)
+    {
+        _attributedTitle = attributedTitle;
+    }
 }
 
 
