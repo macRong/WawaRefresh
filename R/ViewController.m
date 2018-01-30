@@ -116,7 +116,7 @@ UITableViewDelegate
         [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
         [weakSelf.tableView endUpdates];
         
-        [self.tableView.wawaFootRefresh stopAnimation];
+        [self.tableView.wawaFootRefresh stopAnimating];
     });
 }
 

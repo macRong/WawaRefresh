@@ -45,8 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
 
 @property (nonatomic, assign, readonly) BOOL isAnimation;
-- (void)stopAnimation;
-
+- (void)startAnimating;
+- (void)stopAnimating;
 
 #pragma mark - Extent
 

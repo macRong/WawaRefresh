@@ -114,13 +114,16 @@ static char WawaFootRefreshViewKey;
     return self;
 }
 
-- (void)stopAnimation
+#pragma mark - Out
+
+- (void)startAnimating
 {
-    if (self.activityIndicatorView.isAnimating)
-    {
-        NSLog(@"+++++++++ stopAnimating");
-        [self.activityIndicatorView stopAnimating];
-    }
+    self.refreshState = WawaFootRefreshStatusAnimation;
+}
+
+- (void)stopAnimating
+{
+    self.refreshState = WawaFootRefreshStatusAnimation;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
