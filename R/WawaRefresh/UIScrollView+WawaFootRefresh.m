@@ -9,12 +9,6 @@
 #import "UIScrollView+WawaFootRefresh.h"
 #import <objc/runtime.h>
 
-//typedef NS_ENUM(NSUInteger, WawaFootRefreshStatus)
-//{
-//    WawaFootRefreshStatusAnimation,
-//    WawaFootRefreshStatusStoped,
-//    WawaFootRefreshStatusDragged
-//};
 
 static char WawaFootRefreshViewKey;
 
@@ -29,14 +23,13 @@ static char WawaFootRefreshViewKey;
 @property (nonatomic, weak) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
 
+@property (nonatomic, weak) UILabel *bottomHintLabel;
+
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
 @property (nonatomic, assign) BOOL isPreDragging;
 
-//@property (nonatomic, assign) WawaFootRefreshStatus refreshState;
-
 
 - (void)resetScrollViewInsets;
-
 
 @end
 
@@ -196,7 +189,6 @@ static char WawaFootRefreshViewKey;
     }];
 }
 
-//CGFloat preOffsetY = CGFLOAT_MIN;
 - (void)bomb
 {
     NSLog(@" 💥 ");
@@ -223,9 +215,11 @@ static char WawaFootRefreshViewKey;
     self.frame = rect;
 }
 
-- (void)layoutSubviews
+- (float)widthForStringHeight:(float)height
 {
-    self.activityIndicatorView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+    CGSize sizeToFit = [self.bottomHintLabel sizeThatFits:CGSizeMake(CGRectGetWidth(self.bounds)-CGRectGetWidth(self.activityIndicatorView.bounds),height)];
+    
+    return sizeToFit.width;
 }
 
 - (void)resetDra
@@ -267,6 +261,33 @@ static char WawaFootRefreshViewKey;
     }
 }
 
+- (UIFont *)wawa_FontOfSize:(CGFloat)size name:(NSString *)name
+{
+    UIFont *font = [UIFont fontWithName:name size:size];
+    
+    if(font==nil)
+    {
+        font = [UIFont systemFontOfSize:size];
+    }
+    
+    return font;
+}
+
+- (void)layoutSubviews
+{
+    if (self.attributedTitle && self.attributedTitle.string.length > 0)
+    {
+        CGFloat widht = [self widthForStringHeight:WAWAFOOTVIEWHEIGHT];
+        CGFloat originX = (widht+CGRectGetWidth(self.activityIndicatorView.bounds))/2;
+        self.activityIndicatorView.center = CGPointMake(originX,  CGRectGetHeight(self.bounds)/2);
+        self.bottomHintLabel.frame = CGRectMake(CGRectGetMaxX(self.activityIndicatorView.frame)+2, 0, widht, CGRectGetHeight(self.bounds));
+    }
+    else
+    {
+        self.activityIndicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, CGRectGetHeight(self.bounds)/2);
+    }
+}
+
 
 #pragma mark -Setter/Getter
 
@@ -300,7 +321,27 @@ static char WawaFootRefreshViewKey;
     if (_attributedTitle != attributedTitle)
     {
         _attributedTitle = attributedTitle;
+        self.bottomHintLabel.attributedText = _attributedTitle;
+        [self setNeedsLayout];
     }
+}
+
+- (UILabel *)bottomHintLabel
+{
+    if (!_bottomHintLabel)
+    {
+        UILabel *rightBottomLabel       = [[UILabel alloc]init];
+        rightBottomLabel.lineBreakMode  = NSLineBreakByTruncatingTail;
+        rightBottomLabel.numberOfLines  = 1;
+        rightBottomLabel.font           = [self wawa_FontOfSize:12.f name:@"PingFangSC-Light"];
+//        rightBottomLabel.textColor      = [UIColor grayColor];
+//        rightBottomLabel.text = @"dsdsdsdsds";
+        rightBottomLabel.backgroundColor = [UIColor yellowColor];
+        [self addSubview:rightBottomLabel];
+        _bottomHintLabel = rightBottomLabel;
+    }
+    
+    return _bottomHintLabel;
 }
 
 
