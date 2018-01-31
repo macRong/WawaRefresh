@@ -83,7 +83,7 @@ UITableViewDelegate
 {
     self.rows = @[].mutableCopy;
     
-    for (int i = 0; i <15; i++)
+    for (int i = 0; i <20; i++)
     {
         [self.rows addObject:[NSDate dateWithTimeIntervalSinceNow:-(i*30)]];
     }
@@ -93,7 +93,6 @@ UITableViewDelegate
 {
     NSLog(@"💥");
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        
         BOOL s = self.tableView.wawaHeadRefresh.isAnimation;
         NSLog(@"s = %d",s);
         [self.tableView.wawaHeadRefresh stopAnimation];
@@ -111,10 +110,16 @@ UITableViewDelegate
     
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1.0f * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        [weakSelf.tableView beginUpdates];
-        [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
-        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-        [weakSelf.tableView endUpdates];
+//        [weakSelf.tableView beginUpdates];
+  
+        for (int i= 0; i < 1; i ++)
+        {
+            [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
+        }
+        
+        [self.tableView reloadData];
+//        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+//        [weakSelf.tableView endUpdates];
         
         [self.tableView.wawaFootRefresh stopAnimating];
     });

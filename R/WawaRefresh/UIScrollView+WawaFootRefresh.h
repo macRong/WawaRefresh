@@ -9,11 +9,11 @@
 #import <UIKit/UIKit.h>
 @class WawaFootRefreshView;
 
-static const CGFloat WAWAFOOTVIEWHEIGHT = 64.0f;
+static const CGFloat WAWAFOOTVIEWHEIGHT = 60.0f;
 
 typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     WawaFootRefreshPositionScrollViewBottom,
-    WawaFootRefreshPositionContentBottom /** sb模式 */
+    WawaFootRefreshPositionContentBottom /** sb模式 (暂时不提供提供) */
 };
 
 
@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL isAnimation;
 - (void)startAnimating;
 - (void)stopAnimating;
+
 
 #pragma mark - Extent
 

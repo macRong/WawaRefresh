@@ -9,25 +9,30 @@
 #import "UIScrollView+WawaFootRefresh.h"
 #import <objc/runtime.h>
 
-typedef NS_ENUM(NSUInteger, WawaFootRefreshStatus)
-{
-    WawaFootRefreshStatusAnimation,
-    WawaFootRefreshStatusStoped,
-    WawaFootRefreshStatusDragged
-};
+//typedef NS_ENUM(NSUInteger, WawaFootRefreshStatus)
+//{
+//    WawaFootRefreshStatusAnimation,
+//    WawaFootRefreshStatusStoped,
+//    WawaFootRefreshStatusDragged
+//};
 
 static char WawaFootRefreshViewKey;
 
 #pragma mark -WawaFootRefreshView
 
 @interface WawaFootRefreshView()
+{
+    CFRunLoopObserverRef observer;
+}
 
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, weak) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
 
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
-@property (nonatomic, assign) WawaFootRefreshStatus refreshState;
+@property (nonatomic, assign) BOOL isPreDragging;
+
+//@property (nonatomic, assign) WawaFootRefreshStatus refreshState;
 
 
 - (void)resetScrollViewInsets;
@@ -52,7 +57,7 @@ static char WawaFootRefreshViewKey;
     WawaFootRefreshView *footRefreshView = [[WawaFootRefreshView alloc]initWithFrame:CGRectMake(0, originY, self.bounds.size.width, WAWAFOOTVIEWHEIGHT)];
     footRefreshView.startRefreshActionHandler = actionHandler;
     footRefreshView.scrollView = self;
-//    footRefreshView.backgroundColor = [UIColor redColor];
+    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
 
     
@@ -118,12 +123,18 @@ static char WawaFootRefreshViewKey;
 
 - (void)startAnimating
 {
-    self.refreshState = WawaFootRefreshStatusAnimation;
+    [self.activityIndicatorView startAnimating];
 }
 
 - (void)stopAnimating
 {
-    self.refreshState = WawaFootRefreshStatusAnimation;
+    self.isPreDragging = self.scrollView.isDragging;
+
+    if (self.activityIndicatorView.isAnimating)
+    {
+        NSLog(@"+++++++++ stopAnimating");
+        [self.activityIndicatorView stopAnimating];
+    }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -133,7 +144,6 @@ static char WawaFootRefreshViewKey;
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         
         [self scrollViewContentOffsetY:pin.y];
-//        NSLog(@" 0000==== point = %@",NSStringFromCGPoint(pin));
     }
     else if([keyPath isEqualToString:@"contentSize"])
     {
@@ -163,9 +173,12 @@ static char WawaFootRefreshViewKey;
     {
         return;
     }
+  
     
-    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom && self.scrollView.isDragging)
+    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom && self.scrollView.isDragging && !self.isPreDragging)
     {
+        [self runloopWaitingStateObserve];
+
         if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
         {
             [self bomb];
@@ -175,6 +188,7 @@ static char WawaFootRefreshViewKey;
 
 - (void)resetScrollViewInsets
 {
+//    BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds);
     [UIView animateWithDuration:0.2 animations:^{
         UIEdgeInsets contentInset = self.scrollView.contentInset;
         contentInset.bottom += WAWAFOOTVIEWHEIGHT;
@@ -182,33 +196,16 @@ static char WawaFootRefreshViewKey;
     }];
 }
 
+//CGFloat preOffsetY = CGFLOAT_MIN;
 - (void)bomb
 {
     NSLog(@" 💥 ");
-
+    
     [self.activityIndicatorView startAnimating];
-
     if (self.startRefreshActionHandler)
     {
         self.startRefreshActionHandler();
     }
-}
-
-- (void)setScrollViewOffsetY:(CGFloat)y
-{
-    CGRect oriRect = self.frame;
-    CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-    CGFloat contentTop = 0 ;
-    oriRect.origin.y =  yOrigin  + self.scrollView.contentInset.bottom + contentTop;
-    self.frame = oriRect;
-}
-
-- (void)setContentOffSetY:(CGFloat)y
-{
-    CGRect oriRect = self.frame;
-    CGFloat yOrigin = MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-    oriRect.origin.y =  yOrigin  + self.scrollView.contentInset.bottom - self.scrollView.contentInset.top;
-    self.frame = oriRect;
 }
 
 - (void)setFootScrollPosition:(CGFloat)value
@@ -229,6 +226,45 @@ static char WawaFootRefreshViewKey;
 - (void)layoutSubviews
 {
     self.activityIndicatorView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+}
+
+- (void)resetDra
+{
+    self.isPreDragging = NO;
+}
+
+- (void)runloopWaitingStateObserve
+{
+    CFRunLoopRef runLoop = CFRunLoopGetMain();
+    CFStringRef runLoopMode = kCFRunLoopDefaultMode;
+    
+    if (!observer)
+    {
+        observer = CFRunLoopObserverCreateWithHandler(
+                                                      kCFAllocatorDefault, kCFRunLoopBeforeWaiting,
+                                                      true,
+                                                      0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity)
+                                                      {
+                                                          if (!self.isAnimation)
+                                                          {
+                                                              [self performSelectorOnMainThread:@selector(resetDra) withObject:nil waitUntilDone:NO modes:@[NSDefaultRunLoopMode]];
+                                                          }
+                                                          else
+                                                          {
+                                                              CFRunLoopRemoveObserver(runLoop, observer, runLoopMode);
+                                                          }
+                                                      });
+        
+        CFRunLoopAddObserver(runLoop, observer, runLoopMode);
+    }
+    else
+    {
+        BOOL cont = CFRunLoopContainsObserver(runLoop, observer, runLoopMode);
+        if (!cont)
+        {
+            CFRunLoopAddObserver(runLoop, observer, runLoopMode);
+        }
+    }
 }
 
 
@@ -267,13 +303,5 @@ static char WawaFootRefreshViewKey;
     }
 }
 
-- (void)setRefreshState:(WawaFootRefreshStatus)refreshState
-{
-    if (_refreshState == refreshState)
-    {
-        return;
-    }
-    
-}
 
 @end
