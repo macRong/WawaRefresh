@@ -45,22 +45,25 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
 
 @property (nonatomic, assign, readonly) BOOL isAnimation;
+
 - (void)startAnimating;
 - (void)stopAnimating;
-- (void)noDataWithHintText:(NSString *)text;
+- (void)noData:(NSString *)text;
 
 
 #pragma mark - Extent
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /** 距离scrollView底部还剩多少距离开始加载. default: 0 .*/
 @property (nonatomic, assign) CGFloat distanceBottom;
-
-/**  .*/
 @property (nonatomic, readwrite) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
-
 @property (nullable, nonatomic, strong) NSAttributedString *attributedTitle UI_APPEARANCE_SELECTOR;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @end
 
 NS_ASSUME_NONNULL_END
+
+

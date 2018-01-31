@@ -51,14 +51,14 @@ UITableViewDelegate
 //    self.tableView.wawaFootRefresh.distanceBottom = 264.0f;
     
     self.title = @"For iOS 6 & later";
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"Using WawaRefresh"];
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"Wawa loading..."];
 //    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,5)];
 //    [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(6,12)];
 //    [str addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(19,6)];
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial-BoldItalicMT" size:15.0] range:NSMakeRange(0, 5)];
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:15.0] range:NSMakeRange(6, 12)];
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier-BoldOblique" size:15.0] range:NSMakeRange(19, 6)];
-    self.tableView.wawaFootRefresh.attributedTitle = str;
+//    self.tableView.wawaFootRefresh.attributedTitle = str;
 
     UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 88.0f)];
                                                          fot.backgroundColor = [UIColor purpleColor];
@@ -83,7 +83,7 @@ UITableViewDelegate
 {
     self.rows = @[].mutableCopy;
     
-    for (int i = 0; i <20; i++)
+    for (int i = 0; i <15; i++)
     {
         [self.rows addObject:[NSDate dateWithTimeIntervalSinceNow:-(i*30)]];
     }
@@ -112,7 +112,7 @@ UITableViewDelegate
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //        [weakSelf.tableView beginUpdates];
   
-        for (int i= 0; i < 1; i ++)
+        for (int i= 0; i < 5; i ++)
         {
             [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
         }
@@ -122,13 +122,13 @@ UITableViewDelegate
 //        [weakSelf.tableView endUpdates];
         
 //        [self.tableView.wawaFootRefresh stopAnimating];
-        [self.tableView.wawaFootRefresh noDataWithHintText:@"暂无数据"];
+        [self.tableView.wawaFootRefresh noData:@"暂无数据"];
     });
     
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.tableView.wawaFootRefresh startAnimating];
-    });
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [self.tableView.wawaFootRefresh startAnimating];
+//    });
 }
 
 

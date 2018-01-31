@@ -46,6 +46,20 @@ UITableViewDelegate
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [_refresh endRefreshing];
     });
+    
+    // Wawa
+    __weak typeof(self)weakSelf = self;
+    [self.tableView wawaFootRefresh:^{
+        typeof(weakSelf)Sself = weakSelf;
+        [Sself foot];
+    }];
+}
+
+- (void)foot
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.tableView.wawaFootRefresh stopAnimating];
+    });
 }
 
 - (void)reloadAction
@@ -57,7 +71,7 @@ UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 10;
+    return 20;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath

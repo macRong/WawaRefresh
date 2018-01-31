@@ -243,6 +243,7 @@ static char WawaHeadRefreshViewKey;
     self.loadingView.loadingBlock = ^{
         typeof(weakSelf)SSelf = weakSelf;
         _isAnimation = YES;
+//        WawaPullBomb = YES;
         SSelf.startRefreshActionHandler();
         
         [UIView animateWithDuration:0.2 animations:^{

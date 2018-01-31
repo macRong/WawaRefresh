@@ -28,6 +28,8 @@ static char WawaFootRefreshViewKey;
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
 @property (nonatomic, assign) BOOL isPreDragging;
 @property (nonatomic, assign) BOOL isNodata;
+@property (nonatomic, assign) BOOL isObserving;
+
 
 - (void)resetScrollViewInsets;
 
@@ -61,13 +63,15 @@ static char WawaFootRefreshViewKey;
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
-    if (newSuperview == nil)
+    if (newSuperview == nil && self.wawaFootRefresh.isObserving)
     {
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         [scrollView removeObserver:self forKeyPath:@"contentOffset"];
         [scrollView removeObserver:self forKeyPath:@"contentSize"];
+        self.wawaFootRefresh.isObserving = NO;
     }
 }
+
 
 #pragma mark -Setter/Getter
 
@@ -85,6 +89,8 @@ static char WawaFootRefreshViewKey;
 
 - (void)setIsShowFootRefresh:(BOOL)isShowFootRefresh
 {
+    self.wawaFootRefresh.isObserving = YES;
+    
     [self addObserver:self.wawaFootRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
     [self addObserver:self.wawaFootRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     
@@ -136,9 +142,10 @@ static char WawaFootRefreshViewKey;
     [self setNeedsLayout];
 }
 
-- (void)noDataWithHintText:(NSString *)text
+- (void)noData:(NSString *)text
 {
     self.isNodata = YES;
+    WawaPullBomb = NO;
     
     if (self.isAnimation)
     {
@@ -231,6 +238,11 @@ static char WawaFootRefreshViewKey;
     if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
     {
         return;
+    }
+    
+    if (WawaPullBomb)
+    {
+        self.isNodata = !WawaPullBomb;
     }
     
     if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
