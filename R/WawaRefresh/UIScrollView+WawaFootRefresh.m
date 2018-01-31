@@ -117,8 +117,9 @@ static char WawaFootRefreshViewKey;
 - (void)startAnimating
 {
     self.isNodata = NO;
-
-    [self.activityIndicatorView startAnimating];
+    
+    self.bottomHintLabel.attributedText = self.attributedTitle;
+    [self setNeedsLayout];
 }
 
 - (void)stopAnimating
@@ -131,6 +132,8 @@ static char WawaFootRefreshViewKey;
         [self.activityIndicatorView stopAnimating];
         self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     }
+    
+    [self setNeedsLayout];
 }
 
 - (void)noDataWithHintText:(NSString *)text
@@ -152,7 +155,7 @@ static char WawaFootRefreshViewKey;
 }
 
 
-#pragma mark - KVO
+#pragma mark - Observer
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -181,11 +184,50 @@ static char WawaFootRefreshViewKey;
     }
 }
 
+- (void)runloopWaitingStateObserve
+{
+    CFRunLoopRef runLoop = CFRunLoopGetMain();
+    CFStringRef runLoopMode = kCFRunLoopDefaultMode;
+    
+    if (!_observer)
+    {
+        _observer = CFRunLoopObserverCreateWithHandler(
+                                                       kCFAllocatorDefault, kCFRunLoopBeforeWaiting,
+                                                       true,
+                                                       0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity)
+                                                       {
+                                                           if (!self.isAnimation)
+                                                           {
+                                                               [self performSelectorOnMainThread:@selector(resetDra) withObject:nil waitUntilDone:NO modes:@[NSDefaultRunLoopMode]];
+                                                           }
+                                                           else
+                                                           {
+                                                               CFRunLoopRemoveObserver(runLoop, observer, runLoopMode);
+                                                           }
+                                                       });
+        CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
+    }
+    else
+    {
+        BOOL cont = CFRunLoopContainsObserver(runLoop, _observer, runLoopMode);
+        if (!cont)
+        {
+            CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
+        }
+    }
+}
+
+- (void)resetDra
+{
+    self.isPreDragging = NO;
+}
+
 
 #pragma mark - Private
 
 - (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
 {
+//    NSLog(@"contentOffsetY===== %f",contentOffsetY);
     if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
     {
         return;
@@ -221,7 +263,8 @@ static char WawaFootRefreshViewKey;
     
     [self.activityIndicatorView startAnimating];
     self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
-
+    [self setNeedsLayout];
+    
     if (self.startRefreshActionHandler)
     {
         self.startRefreshActionHandler();
@@ -250,45 +293,6 @@ static char WawaFootRefreshViewKey;
     return sizeToFit.width;
 }
 
-- (void)resetDra
-{
-    self.isPreDragging = NO;
-}
-
-- (void)runloopWaitingStateObserve
-{
-    CFRunLoopRef runLoop = CFRunLoopGetMain();
-    CFStringRef runLoopMode = kCFRunLoopDefaultMode;
-    
-    if (!_observer)
-    {
-        _observer = CFRunLoopObserverCreateWithHandler(
-                                                      kCFAllocatorDefault, kCFRunLoopBeforeWaiting,
-                                                      true,
-                                                      0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity)
-                                                      {
-                                                          if (!self.isAnimation)
-                                                          {
-                                                              [self performSelectorOnMainThread:@selector(resetDra) withObject:nil waitUntilDone:NO modes:@[NSDefaultRunLoopMode]];
-                                                          }
-                                                          else
-                                                          {
-                                                              CFRunLoopRemoveObserver(runLoop, observer, runLoopMode);
-                                                          }
-                                                      });
-        
-        CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
-    }
-    else
-    {
-        BOOL cont = CFRunLoopContainsObserver(runLoop, _observer, runLoopMode);
-        if (!cont)
-        {
-            CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
-        }
-    }
-}
-
 - (UIFont *)wawa_FontOfSize:(CGFloat)size name:(NSString *)name
 {
     UIFont *font = [UIFont fontWithName:name size:size];
@@ -303,18 +307,17 @@ static char WawaFootRefreshViewKey;
 
 - (void)layoutSubviews
 {
-    if (self.attributedTitle && self.attributedTitle.string.length > 0)
-    {
-        CGFloat widht = [self widthForStringHeight:WAWAFOOTVIEWHEIGHT];
-        CGFloat activityView_sizeW = self.isNodata ? 0 : CGRectGetWidth(self.activityIndicatorView.bounds);
-        CGFloat originX = (CGRectGetWidth(self.bounds)-widht+activityView_sizeW)/2;
-        self.activityIndicatorView.center = CGPointMake(originX,  CGRectGetHeight(self.bounds)/2);
-        self.bottomHintLabel.frame = CGRectMake(CGRectGetMaxX(self.activityIndicatorView.frame)+2, 0, widht, CGRectGetHeight(self.bounds));
-    }
-    else
-    {
-        self.activityIndicatorView.center = CGPointMake(CGRectGetWidth(self.bounds)/2, CGRectGetHeight(self.bounds)/2);
-    }
+    CGFloat widht = [self widthForStringHeight:WAWAFOOTVIEWHEIGHT];
+ 
+    [UIView animateWithDuration:0.1f animations:^{
+        CGFloat originX = (CGRectGetWidth(self.bounds)-(widht+CGRectGetWidth(self.activityIndicatorView.bounds)+2))/2;
+        CGRect activiRect = self.activityIndicatorView.frame;
+        activiRect.origin.x =originX;
+        self.activityIndicatorView.frame = activiRect;
+        
+        CGFloat bottomLabelOriginY = self.activityIndicatorView.isHidden ? (CGRectGetWidth(self.bounds) - widht)/2 : CGRectGetMaxX(self.activityIndicatorView.frame)+2 ;
+        self.bottomHintLabel.frame = CGRectMake(bottomLabelOriginY, 0, widht, CGRectGetHeight(self.bounds));
+    }];
 }
 
 
@@ -325,20 +328,24 @@ static char WawaFootRefreshViewKey;
     if(!_activityIndicatorView)
     {
         UIActivityIndicatorView *tempActivityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        tempActivityIndicatorView.frame = CGRectMake(self.center.x-28.0f/2, (WAWAFOOTVIEWHEIGHT-28.0f)/2, 28.0f, 28.0f);
+        tempActivityIndicatorView.frame = CGRectMake(self.center.x-28.0f/2, (CGRectGetHeight(self.bounds)-28.0f)/2, 28.0f, 28.0f);
         tempActivityIndicatorView.hidesWhenStopped = YES;
         [self addSubview:tempActivityIndicatorView];
         _activityIndicatorView = tempActivityIndicatorView;
     }
     
-    
     return _activityIndicatorView;
 }
 
-- (UIActivityIndicatorViewStyle)activityIndicatorViewStyle
+- (void)setActivityIndicatorViewStyle:(UIActivityIndicatorViewStyle)activityIndicatorViewStyle
 {
-    return self.activityIndicatorView.activityIndicatorViewStyle;
+    self.activityIndicatorView.activityIndicatorViewStyle = activityIndicatorViewStyle;
 }
+
+//- (UIActivityIndicatorViewStyle)activityIndicatorViewStyle
+//{
+//    return self.activityIndicatorView.activityIndicatorViewStyle;
+//}
 
 - (BOOL)isAnimation
 {
@@ -351,8 +358,9 @@ static char WawaFootRefreshViewKey;
     {
         _attributedTitle = attributedTitle;
         self.bottomHintLabel.attributedText = _attributedTitle;
-        [self setNeedsLayout];
     }
+    
+    [self setNeedsLayout];
 }
 
 - (UILabel *)bottomHintLabel

@@ -48,10 +48,10 @@ UITableViewDelegate
         [Sself foot];
     }];
     
-    self.tableView.wawaFootRefresh.distanceBottom = 264.0f;
+//    self.tableView.wawaFootRefresh.distanceBottom = 264.0f;
     
     self.title = @"For iOS 6 & later";
-    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"Using NSAttributed String"];
+    NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"Using WawaRefresh"];
 //    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,5)];
 //    [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(6,12)];
 //    [str addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(19,6)];
@@ -123,6 +123,11 @@ UITableViewDelegate
         
 //        [self.tableView.wawaFootRefresh stopAnimating];
         [self.tableView.wawaFootRefresh noDataWithHintText:@"暂无数据"];
+    });
+    
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(6 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.tableView.wawaFootRefresh startAnimating];
     });
 }
 
