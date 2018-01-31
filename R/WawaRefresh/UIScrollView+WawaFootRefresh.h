@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) BOOL isAnimation;
 - (void)startAnimating;
 - (void)stopAnimating;
-
+- (void)noDataWithHintText:(NSString *)text;
 
 
 #pragma mark - Extent

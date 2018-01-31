@@ -52,16 +52,16 @@ UITableViewDelegate
     
     self.title = @"For iOS 6 & later";
     NSMutableAttributedString *str = [[NSMutableAttributedString alloc] initWithString:@"Using NSAttributed String"];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,5)];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(6,12)];
-    [str addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(19,6)];
-    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial-BoldItalicMT" size:15.0] range:NSMakeRange(0, 5)];
-    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:15.0] range:NSMakeRange(6, 12)];
-    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier-BoldOblique" size:15.0] range:NSMakeRange(19, 6)];
+//    [str addAttribute:NSForegroundColorAttributeName value:[UIColor blueColor] range:NSMakeRange(0,5)];
+//    [str addAttribute:NSForegroundColorAttributeName value:[UIColor redColor] range:NSMakeRange(6,12)];
+//    [str addAttribute:NSForegroundColorAttributeName value:[UIColor greenColor] range:NSMakeRange(19,6)];
+//    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial-BoldItalicMT" size:15.0] range:NSMakeRange(0, 5)];
+//    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:15.0] range:NSMakeRange(6, 12)];
+//    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier-BoldOblique" size:15.0] range:NSMakeRange(19, 6)];
     self.tableView.wawaFootRefresh.attributedTitle = str;
 
     UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 88.0f)];
-                                                         fot.backgroundColor = [UIColor yellowColor];
+                                                         fot.backgroundColor = [UIColor purpleColor];
                                                          self.tableView.tableFooterView = fot;
     
     
@@ -108,7 +108,7 @@ UITableViewDelegate
 {
     __weak typeof(self)weakSelf = self;
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1.0f * NSEC_PER_SEC);
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 3.0f * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //        [weakSelf.tableView beginUpdates];
   
@@ -121,9 +121,11 @@ UITableViewDelegate
 //        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
 //        [weakSelf.tableView endUpdates];
         
-        [self.tableView.wawaFootRefresh stopAnimating];
+//        [self.tableView.wawaFootRefresh stopAnimating];
+        [self.tableView.wawaFootRefresh noDataWithHintText:@"暂无数据"];
     });
 }
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {

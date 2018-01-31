@@ -16,7 +16,7 @@ static char WawaFootRefreshViewKey;
 
 @interface WawaFootRefreshView()
 {
-    CFRunLoopObserverRef observer;
+    CFRunLoopObserverRef _observer;
 }
 
 @property (nonatomic, weak) UIScrollView *scrollView;
@@ -27,7 +27,7 @@ static char WawaFootRefreshViewKey;
 
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
 @property (nonatomic, assign) BOOL isPreDragging;
-
+@property (nonatomic, assign) BOOL isNodata;
 
 - (void)resetScrollViewInsets;
 
@@ -50,7 +50,7 @@ static char WawaFootRefreshViewKey;
     WawaFootRefreshView *footRefreshView = [[WawaFootRefreshView alloc]initWithFrame:CGRectMake(0, originY, self.bounds.size.width, WAWAFOOTVIEWHEIGHT)];
     footRefreshView.startRefreshActionHandler = actionHandler;
     footRefreshView.scrollView = self;
-    footRefreshView.backgroundColor = [UIColor redColor];
+//    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
 
     
@@ -61,7 +61,7 @@ static char WawaFootRefreshViewKey;
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
-    if (self.superview && newSuperview == nil)
+    if (newSuperview == nil)
     {
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         [scrollView removeObserver:self forKeyPath:@"contentOffset"];
@@ -116,6 +116,8 @@ static char WawaFootRefreshViewKey;
 
 - (void)startAnimating
 {
+    self.isNodata = NO;
+
     [self.activityIndicatorView startAnimating];
 }
 
@@ -127,8 +129,30 @@ static char WawaFootRefreshViewKey;
     {
         NSLog(@"+++++++++ stopAnimating");
         [self.activityIndicatorView stopAnimating];
+        self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     }
 }
+
+- (void)noDataWithHintText:(NSString *)text
+{
+    self.isNodata = YES;
+    
+    if (self.isAnimation)
+    {
+        [self stopAnimating];
+    }
+    
+    if (self.bottomHintLabel.isHidden)
+    {
+        self.bottomHintLabel.hidden = NO;
+    }
+    
+    self.bottomHintLabel.text = text;
+    [self setNeedsLayout];
+}
+
+
+#pragma mark - KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
@@ -166,9 +190,11 @@ static char WawaFootRefreshViewKey;
     {
         return;
     }
-  
     
-    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom && self.scrollView.isDragging && !self.isPreDragging)
+    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
+        self.scrollView.isDragging &&
+        !self.isPreDragging &&
+        !self.isNodata)
     {
         [self runloopWaitingStateObserve];
 
@@ -194,6 +220,8 @@ static char WawaFootRefreshViewKey;
     NSLog(@" 💥 ");
     
     [self.activityIndicatorView startAnimating];
+    self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
+
     if (self.startRefreshActionHandler)
     {
         self.startRefreshActionHandler();
@@ -232,9 +260,9 @@ static char WawaFootRefreshViewKey;
     CFRunLoopRef runLoop = CFRunLoopGetMain();
     CFStringRef runLoopMode = kCFRunLoopDefaultMode;
     
-    if (!observer)
+    if (!_observer)
     {
-        observer = CFRunLoopObserverCreateWithHandler(
+        _observer = CFRunLoopObserverCreateWithHandler(
                                                       kCFAllocatorDefault, kCFRunLoopBeforeWaiting,
                                                       true,
                                                       0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity)
@@ -249,14 +277,14 @@ static char WawaFootRefreshViewKey;
                                                           }
                                                       });
         
-        CFRunLoopAddObserver(runLoop, observer, runLoopMode);
+        CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
     }
     else
     {
-        BOOL cont = CFRunLoopContainsObserver(runLoop, observer, runLoopMode);
+        BOOL cont = CFRunLoopContainsObserver(runLoop, _observer, runLoopMode);
         if (!cont)
         {
-            CFRunLoopAddObserver(runLoop, observer, runLoopMode);
+            CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
         }
     }
 }
@@ -278,7 +306,8 @@ static char WawaFootRefreshViewKey;
     if (self.attributedTitle && self.attributedTitle.string.length > 0)
     {
         CGFloat widht = [self widthForStringHeight:WAWAFOOTVIEWHEIGHT];
-        CGFloat originX = (widht+CGRectGetWidth(self.activityIndicatorView.bounds))/2;
+        CGFloat activityView_sizeW = self.isNodata ? 0 : CGRectGetWidth(self.activityIndicatorView.bounds);
+        CGFloat originX = (CGRectGetWidth(self.bounds)-widht+activityView_sizeW)/2;
         self.activityIndicatorView.center = CGPointMake(originX,  CGRectGetHeight(self.bounds)/2);
         self.bottomHintLabel.frame = CGRectMake(CGRectGetMaxX(self.activityIndicatorView.frame)+2, 0, widht, CGRectGetHeight(self.bounds));
     }
@@ -334,9 +363,7 @@ static char WawaFootRefreshViewKey;
         rightBottomLabel.lineBreakMode  = NSLineBreakByTruncatingTail;
         rightBottomLabel.numberOfLines  = 1;
         rightBottomLabel.font           = [self wawa_FontOfSize:12.f name:@"PingFangSC-Light"];
-//        rightBottomLabel.textColor      = [UIColor grayColor];
-//        rightBottomLabel.text = @"dsdsdsdsds";
-        rightBottomLabel.backgroundColor = [UIColor yellowColor];
+        rightBottomLabel.textColor      = [UIColor grayColor];
         [self addSubview:rightBottomLabel];
         _bottomHintLabel = rightBottomLabel;
     }
