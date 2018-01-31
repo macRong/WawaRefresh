@@ -35,6 +35,6 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  15. 暴露start loading stop 事件
  16. dragging是💥，不松手如果在满足加载更多条件处理
  17. ContentBottom                                    // 第2版
- 
+ 18. bottom暂无数据状态时，下拉自动解除bottom暂无状态 ✅
  
  */
