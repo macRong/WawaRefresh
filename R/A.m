@@ -22,11 +22,13 @@ UITableViewDelegate
 
 @end
 
+
 @implementation A
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     [self.view addSubview:self.tableView];
 
     _refresh = [[UIRefreshControl alloc]initWithFrame:CGRectMake(20, 20, 50, 50)];

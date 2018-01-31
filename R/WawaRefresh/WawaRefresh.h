@@ -12,7 +12,7 @@
 
 
 static const CGFloat WAWALOADINGHEIGHT = 64.0f;
-static BOOL WawaPullBomb;
+
 
 
 /**

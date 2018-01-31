@@ -10,7 +10,7 @@
 #import "WawaLoadingView.h"
 #import <objc/runtime.h>
 
-
+extern BOOL WawaPullBomb;
 #pragma mark -############################# WawaHeadView #################################################
 
 @interface WawaHeadRefreshView()
@@ -235,7 +235,7 @@ static char WawaHeadRefreshViewKey;
     {
         _preValue = value;
     }
-    
+        
     CGFloat currentHeight = fabs(_preValue - value);
     [self.loadingView setLoaingValue:currentHeight*12.0f/WAWALOADINGHEIGHT-12.0f];
     
@@ -243,7 +243,7 @@ static char WawaHeadRefreshViewKey;
     self.loadingView.loadingBlock = ^{
         typeof(weakSelf)SSelf = weakSelf;
         _isAnimation = YES;
-//        WawaPullBomb = YES;
+        WawaPullBomb = YES;
         SSelf.startRefreshActionHandler();
         
         [UIView animateWithDuration:0.2 animations:^{

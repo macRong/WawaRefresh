@@ -9,8 +9,8 @@
 #import "UIScrollView+WawaFootRefresh.h"
 #import <objc/runtime.h>
 
-
 static char WawaFootRefreshViewKey;
+BOOL WawaPullBomb;
 
 #pragma mark -WawaFootRefreshView
 
@@ -54,7 +54,6 @@ static char WawaFootRefreshViewKey;
     footRefreshView.scrollView = self;
 //    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
-
     
     self.wawaFootRefresh = footRefreshView;
     self.wawaFootRefresh.footRefreshPosition = position;
@@ -301,7 +300,6 @@ static char WawaFootRefreshViewKey;
 - (float)widthForStringHeight:(float)height
 {
     CGSize sizeToFit = [self.bottomHintLabel sizeThatFits:CGSizeMake(CGRectGetWidth(self.bounds)-CGRectGetWidth(self.activityIndicatorView.bounds),height)];
-    
     return sizeToFit.width;
 }
 
@@ -309,7 +307,7 @@ static char WawaFootRefreshViewKey;
 {
     UIFont *font = [UIFont fontWithName:name size:size];
     
-    if(font==nil)
+    if(font == nil)
     {
         font = [UIFont systemFontOfSize:size];
     }
