@@ -21,6 +21,7 @@ extern BOOL WawaPullBomb;
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, weak) WawaLoadingView *loadingView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
+@property (nonatomic, assign) BOOL isObserving;
 
 @end
 
