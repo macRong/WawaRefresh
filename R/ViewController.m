@@ -59,7 +59,7 @@ UITableViewDelegate
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Arial-BoldItalicMT" size:15.0] range:NSMakeRange(0, 5)];
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"HelveticaNeue-Bold" size:15.0] range:NSMakeRange(6, 12)];
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier-BoldOblique" size:15.0] range:NSMakeRange(19, 6)];
-//    self.tableView.wawaFootRefresh.attributedTitle = str;
+    self.tableView.wawaFootRefresh.attributedTitle = str;
 
     UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 88.0f)];
                                                          fot.backgroundColor = [UIColor purpleColor];

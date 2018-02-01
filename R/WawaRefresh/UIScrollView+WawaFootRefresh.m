@@ -239,10 +239,7 @@ BOOL WawaPullBomb;
         return;
     }
     
-    if (WawaPullBomb)
-    {
-        self.isNodata = !WawaPullBomb;
-    }
+    [self resetValueFromTopBomb];
     
     if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
         self.scrollView.isDragging &&
@@ -255,6 +252,19 @@ BOOL WawaPullBomb;
         {
             [self bomb];
         }
+    }
+}
+
+- (void)resetValueFromTopBomb
+{
+    if (WawaPullBomb)
+    {
+        self.isNodata = !WawaPullBomb;
+        if (self.attributedTitle && self.attributedTitle.string.length > 0)
+        {
+            
+        }
+        self.bottomHintLabel.text = self.attributedTitle.string;
     }
 }
 
