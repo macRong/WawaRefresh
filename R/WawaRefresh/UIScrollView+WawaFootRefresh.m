@@ -25,6 +25,7 @@ BOOL WawaPullBomb;
 
 @property (nonatomic, weak) UILabel *bottomHintLabel;
 
+@property (nonatomic, assign) CGFloat originScroll_BottomInset;
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
 @property (nonatomic, assign) BOOL isPreDragging;
 @property (nonatomic, assign) BOOL isNodata;
@@ -55,22 +56,11 @@ BOOL WawaPullBomb;
 //    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
     
+    self.wawaFootRefresh.originScroll_BottomInset = self.contentInset.bottom;
     self.wawaFootRefresh = footRefreshView;
     self.wawaFootRefresh.footRefreshPosition = position;
     self.isShowFootRefresh = YES;
 }
-
-- (void)willMoveToSuperview:(UIView *)newSuperview
-{
-    if (newSuperview == nil && self.wawaFootRefresh.isObserving)
-    {
-        UIScrollView *scrollView = (UIScrollView *)self.superview;
-        [scrollView removeObserver:self forKeyPath:@"contentOffset"];
-        [scrollView removeObserver:self forKeyPath:@"contentSize"];
-        self.wawaFootRefresh.isObserving = NO;
-    }
-}
-
 
 #pragma mark -Setter/Getter
 
@@ -88,11 +78,26 @@ BOOL WawaPullBomb;
 
 - (void)setIsShowFootRefresh:(BOOL)isShowFootRefresh
 {
-    self.wawaFootRefresh.isObserving = YES;
-    
-    [self addObserver:self.wawaFootRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
-    [self addObserver:self.wawaFootRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
-    
+    if (!isShowFootRefresh)
+    {
+        if (self.wawaFootRefresh.isObserving)
+        {
+            [self removeObserver:self forKeyPath:@"contentOffset"];
+            [self removeObserver:self forKeyPath:@"contentSize"];
+            self.wawaFootRefresh.isObserving = NO;
+        }
+    }
+    else
+    {
+        if (!self.wawaFootRefresh.isObserving)
+        {
+            self.wawaFootRefresh.isObserving = YES;
+            [self addObserver:self.wawaFootRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+            [self addObserver:self.wawaFootRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
+            [self.wawaFootRefresh setNeedsLayout];
+        }
+    }
+
     [self.wawaFootRefresh resetScrollViewInsets];
 }
 
@@ -117,6 +122,21 @@ BOOL WawaPullBomb;
     return self;
 }
 
+- (void)willMoveToSuperview:(UIView *)newSuperview
+{
+    if (self.superview && newSuperview == nil)
+    {
+        UIScrollView *scrollView = (UIScrollView *)self.superview;
+        if (scrollView.isShowFootRefresh && self.isObserving)
+        {
+            [scrollView removeObserver:self forKeyPath:@"contentOffset"];
+            [scrollView removeObserver:self forKeyPath:@"contentSize"];
+            self.isObserving = NO;
+        }
+    }
+}
+
+
 #pragma mark - Out
 
 - (void)startAnimating
@@ -136,6 +156,34 @@ BOOL WawaPullBomb;
         NSLog(@"+++++++++ stopAnimating");
         [self.activityIndicatorView stopAnimating];
         self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            // ??????
+//            BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds)+self.scrollView.contentInset.bottom;
+//            NSLog(@"============isadd222 = %d, ll =%f ,rr=%f",isAddInset,self.scrollView.contentSize.height, CGRectGetHeight(self.scrollView.bounds)+self.scrollView.contentInset.bottom);
+//
+//
+//            if (isAddInset)
+//            {
+//                if (!con)
+//                {
+//                    [UIView animateWithDuration:0.2 animations:^{
+//
+//                        CGRect rec = self.frame;
+//                        rec.origin.y = self.scrollView.contentSize.height;
+//                        self.frame = rec;
+//                        NSLog(@"移动");
+//                        UIEdgeInsets contentInset = self.scrollView.contentInset;
+//                        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
+////                        contentInset.bottom =0;
+//                        self.scrollView.contentInset = contentInset;
+//                    }];
+//                    con = YES;
+//                }
+//            }
+            // ?????
+        });
+
     }
     
     [self setNeedsLayout];
@@ -179,13 +227,13 @@ BOOL WawaPullBomb;
         {
             CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
             [self setFootScrollPosition:yOrigin];
-            NSLog(@"------------contsize=%f",yOrigin);
+//            NSLog(@"------------contsize=%f",yOrigin);
         }
         else
         {
             CGFloat yOrigin = MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
             [self setFootContentPosition:yOrigin];
-            NSLog(@"------------contsize=%f",yOrigin);
+//            NSLog(@"------------contsize=%f",yOrigin);
         }
     }
 }
@@ -271,17 +319,38 @@ BOOL WawaPullBomb;
 - (void)resetScrollViewInsets
 {
 //    BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds);
-    [UIView animateWithDuration:0.2 animations:^{
-        UIEdgeInsets contentInset = self.scrollView.contentInset;
-        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
-        self.scrollView.contentInset = contentInset;
-    }];
+//    NSLog(@"============isadd = %d",isAddInset);
+//    if (isAddInset)
+//    {
+        [UIView animateWithDuration:0.2 animations:^{
+            UIEdgeInsets contentInset = self.scrollView.contentInset;
+            contentInset.bottom += WAWAFOOTVIEWHEIGHT;
+            self.scrollView.contentInset = contentInset;
+        }];
+    
+    
+//    [UIView animateWithDuration:0.2 animations:^{
+//        UIEdgeInsets contentInset = self.scrollView.contentInset;
+//        contentInset.bottom = self.originScroll_BottomInset + WAWAFOOTVIEWHEIGHT;
+//        self.scrollView.contentInset = contentInset;
+//    }];
+    
+    
+//    }
+//    else
+//    {
+//        [UIView animateWithDuration:0.2 animations:^{
+//            UIEdgeInsets contentInset = self.scrollView.contentInset;
+//            contentInset.bottom -= WAWAFOOTVIEWHEIGHT;
+//            self.scrollView.contentInset = contentInset;
+//        }];
+//    }
 }
 
+BOOL con ;
 - (void)bomb
 {
     NSLog(@" 💥 ");
-    
     [self.activityIndicatorView startAnimating];
     self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     [self setNeedsLayout];
