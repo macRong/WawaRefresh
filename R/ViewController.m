@@ -34,7 +34,7 @@ UITableViewDelegate
     // Do any additional setup after loading the view, typically from a nib.
     [self.view addSubview:self.tableView];
 
-    self.view.backgroundColor = [UIColor brownColor];
+    self.view.backgroundColor = [UIColor purpleColor];
     [self initVar];
     
     
@@ -48,6 +48,8 @@ UITableViewDelegate
         typeof(weakSelf)Sself = weakSelf;
         [Sself foot];
     }];
+    
+    self.tableView.wawaFootRefresh.backgroundColor = [UIColor redColor];
     
 //    self.tableView.wawaFootRefresh.distanceBottom = 264.0f;
     
@@ -84,7 +86,7 @@ UITableViewDelegate
 {
     self.rows = @[].mutableCopy;
     
-    for (int i = 0; i <15; i++)
+    for (int i = 0; i <5; i++)
     {
         [self.rows addObject:[NSDate dateWithTimeIntervalSinceNow:-(i*30)]];
     }
@@ -113,7 +115,7 @@ UITableViewDelegate
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //        [weakSelf.tableView beginUpdates];
   
-        for (int i= 0; i < 5; i ++)
+        for (int i= 0; i < 1; i ++)
         {
             [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
         }
@@ -122,8 +124,8 @@ UITableViewDelegate
 //        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
 //        [weakSelf.tableView endUpdates];
         
-//        [self.tableView.wawaFootRefresh stopAnimating];
-        [self.tableView.wawaFootRefresh noData:@"暂无数据"];
+        [self.tableView.wawaFootRefresh stopAnimating];
+//        [self.tableView.wawaFootRefresh noData:@"暂无数据"];
     });
     
     

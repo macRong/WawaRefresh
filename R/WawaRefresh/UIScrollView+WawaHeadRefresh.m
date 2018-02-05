@@ -21,6 +21,7 @@ extern BOOL WawaPullBomb;
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, weak) WawaLoadingView *loadingView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
+@property (nonatomic, assign) BOOL isObserving;
 
 @end
 
@@ -84,7 +85,10 @@ static char WawaHeadRefreshViewKey;
 
 - (void)setIsShowHeadRefresh:(BOOL)isShowHeadRefresh
 {
-    [self addObserver:self.wawaHeadRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    if (!self.wawaHeadRefresh.isObserving)
+    {
+        [self addObserver:self.wawaHeadRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    }
 //        [self addObserver:self.wawaHeadRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     //    [self addObserver:self.wawaHeadRefresh forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
 }
@@ -114,10 +118,11 @@ static char WawaHeadRefreshViewKey;
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
-    if (self.superview && newSuperview == nil)
+    if (self.superview && newSuperview == nil && self.isObserving)
     {
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         [scrollView removeObserver:self forKeyPath:@"contentOffset"];
+        self.isObserving = NO;
     }
 }
 
