@@ -260,10 +260,6 @@ BOOL WawaPullBomb;
     if (WawaPullBomb)
     {
         self.isNodata = !WawaPullBomb;
-        if (self.attributedTitle && self.attributedTitle.string.length > 0)
-        {
-            
-        }
         self.bottomHintLabel.text = self.attributedTitle.string;
     }
 }
@@ -390,7 +386,7 @@ BOOL WawaPullBomb;
         UILabel *rightBottomLabel       = [[UILabel alloc]init];
         rightBottomLabel.lineBreakMode  = NSLineBreakByTruncatingTail;
         rightBottomLabel.numberOfLines  = 1;
-        rightBottomLabel.font           = [self wawa_FontOfSize:12.f name:@"PingFangSC-Light"];
+        rightBottomLabel.font           = [self wawa_FontOfSize:13.f name:@"PingFangSC-Light"];
         rightBottomLabel.textColor      = [UIColor grayColor];
         [self addSubview:rightBottomLabel];
         _bottomHintLabel = rightBottomLabel;

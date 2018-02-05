@@ -51,16 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)noData:(NSString *)text;
 
 
-#pragma mark - Extent
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#pragma mark - Extent(optional)
 
 /** 距离scrollView底部还剩多少距离开始加载. default: 0 .*/
 @property (nonatomic, assign) CGFloat distanceBottom;
 @property (nonatomic, readwrite) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
 @property (nullable, nonatomic, strong) NSAttributedString *attributedTitle UI_APPEARANCE_SELECTOR;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @end
 
