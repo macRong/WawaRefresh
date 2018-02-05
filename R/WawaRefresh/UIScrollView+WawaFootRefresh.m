@@ -36,6 +36,7 @@ BOOL WawaPullBomb;
 
 @end
 
+
 #pragma mark -UIScrollView+WawaFootRefresh
 
 @implementation UIScrollView (WawaFootRefresh)
@@ -53,7 +54,6 @@ BOOL WawaPullBomb;
     WawaFootRefreshView *footRefreshView = [[WawaFootRefreshView alloc]initWithFrame:CGRectMake(0, originY, self.bounds.size.width, WAWAFOOTVIEWHEIGHT)];
     footRefreshView.startRefreshActionHandler = actionHandler;
     footRefreshView.scrollView = self;
-//    footRefreshView.backgroundColor = [UIColor redColor];
     [self addSubview:footRefreshView];
     
     self.wawaFootRefresh.originScroll_BottomInset = self.contentInset.bottom;
@@ -61,6 +61,7 @@ BOOL WawaPullBomb;
     self.wawaFootRefresh.footRefreshPosition = position;
     self.isShowFootRefresh = YES;
 }
+
 
 #pragma mark -Setter/Getter
 
@@ -126,7 +127,8 @@ BOOL WawaPullBomb;
 {
     if (self.superview && newSuperview == nil)
     {
-        UIScrollView *scrollView = (UIScrollView *)self.superview;
+//        UIScrollView *scrollView = (UIScrollView *)self.superview;
+        UIScrollView *scrollView = (UIScrollView *)self.scrollView;
         if (scrollView.isShowFootRefresh && self.isObserving)
         {
             [scrollView removeObserver:self forKeyPath:@"contentOffset"];
@@ -215,6 +217,8 @@ BOOL WawaPullBomb;
 {
     if ([keyPath isEqualToString:@"contentOffset"])
     {
+        return; // ??
+
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         
         [self scrollViewContentOffsetY:pin.y];
@@ -227,13 +231,11 @@ BOOL WawaPullBomb;
         {
             CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
             [self setFootScrollPosition:yOrigin];
-//            NSLog(@"------------contsize=%f",yOrigin);
         }
         else
         {
             CGFloat yOrigin = MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
             [self setFootContentPosition:yOrigin];
-//            NSLog(@"------------contsize=%f",yOrigin);
         }
     }
 }
@@ -315,32 +317,12 @@ BOOL WawaPullBomb;
 - (void)resetScrollViewInsets
 {
 //    BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds);
-//    NSLog(@"============isadd = %d",isAddInset);
-//    if (isAddInset)
-//    {
-        [UIView animateWithDuration:0.2 animations:^{
-            UIEdgeInsets contentInset = self.scrollView.contentInset;
-            contentInset.bottom += WAWAFOOTVIEWHEIGHT;
-            self.scrollView.contentInset = contentInset;
-        }];
-    
-    
-//    [UIView animateWithDuration:0.2 animations:^{
-//        UIEdgeInsets contentInset = self.scrollView.contentInset;
-//        contentInset.bottom = self.originScroll_BottomInset + WAWAFOOTVIEWHEIGHT;
-//        self.scrollView.contentInset = contentInset;
-//    }];
-    
-    
-//    }
-//    else
-//    {
-//        [UIView animateWithDuration:0.2 animations:^{
-//            UIEdgeInsets contentInset = self.scrollView.contentInset;
-//            contentInset.bottom -= WAWAFOOTVIEWHEIGHT;
-//            self.scrollView.contentInset = contentInset;
-//        }];
-//    }
+
+    [UIView animateWithDuration:0.2 animations:^{
+        UIEdgeInsets contentInset = self.scrollView.contentInset;
+        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
+        self.scrollView.contentInset = contentInset;
+    }];
 }
 
 BOOL con ;
@@ -357,11 +339,13 @@ BOOL con ;
     }
 }
 
+// ????
 - (void)setFootScrollPosition:(CGFloat)value
 {
     CGRect rect = self.frame;
-    CGFloat sOrigingY = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? 0 : self.scrollView.contentInset.top;
-    rect.origin.y = value -sOrigingY + self.scrollView.contentInset.bottom /* ? */ - WAWAFOOTVIEWHEIGHT;
+    CGFloat fvalue = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? value : value - self.scrollView.wawa_contentInset.top - self.scrollView.wawa_contentInset.bottom;
+    rect.origin.y = fvalue;
+    NSLog(@"aaaaaaa value=%f ,sOrigingY=%f, self.scrollView.wawa_contentInset.bottom =%f ",value ,self.scrollView.wawa_contentInset.top, self.scrollView.wawa_contentInset.bottom);
     self.frame = rect;
 }
 

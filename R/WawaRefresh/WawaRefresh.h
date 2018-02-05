@@ -9,6 +9,7 @@
 #import "WawaLoadingView.h"
 #import "UIScrollView+WawaHeadRefresh.h"
 #import "UIScrollView+WawaFootRefresh.h"
+#import "UIScrollView+WawaLayout.h"
 
 
 static const CGFloat WAWALOADINGHEIGHT = 64.0f;
@@ -18,6 +19,8 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
 /**
  question:
  
+ 0. Hidden
+
  1.快速滑动处理，offset不准
  2.Timer, Runloop
  3.💥时 inset设置生硬
@@ -36,5 +39,39 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  16. dragging是💥，不松手如果在满足加载更多条件处理
  17. ContentBottom                                    // 第2版
  18. bottom暂无数据状态时，下拉自动解除bottom暂无状态 ✅
+ */
+
+
+/*
+ - (void)setInsetTop:(CGFloat)insetTop{
+ UIEdgeInsets inset = self.contentInset;
+ inset.top = insetTop;
+ if (@available(iOS 11.0, *)) {
+ inset.top -= (self.adjustedContentInset.top - self.contentInset.top);
+ }
+ self.contentInset = inset;
+ }
+ 
+ - (CGFloat)insetBottom{
+ return self.realContentInset.bottom;
+ }
+ 
+ - (void)setInsetBottom:(CGFloat)insetBottom{
+ UIEdgeInsets inset = self.contentInset;
+ inset.bottom = insetBottom;
+ if (@available(iOS 11.0, *)) {
+ inset.bottom -= (self.adjustedContentInset.bottom - self.contentInset.bottom);
+ }
+ self.contentInset = inset;
+ }
+ 
+ - (UIEdgeInsets)realContentInset{
+ if (@available(iOS 11.0, *)) {
+ return self.adjustedContentInset;
+ } else {
+ return self.contentInset;
+ }
+ }
+ 
  
  */

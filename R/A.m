@@ -30,6 +30,7 @@ UITableViewDelegate
     [super viewDidLoad];
     
     [self.view addSubview:self.tableView];
+    self.view.backgroundColor = [UIColor redColor];
 
     _refresh = [[UIRefreshControl alloc]initWithFrame:CGRectMake(20, 20, 50, 50)];
     [_refresh addTarget:self action:@selector(reloadAction) forControlEvents:UIControlEventValueChanged];

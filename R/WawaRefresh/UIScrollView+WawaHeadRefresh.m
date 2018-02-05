@@ -136,6 +136,10 @@ static char WawaHeadRefreshViewKey;
             return;
         }
         
+        CGPoint p = [self.scrollView.panGestureRecognizer velocityInView:self.scrollView];
+         CGFloat f =   self.scrollView.decelerationRate;
+//        NSLog(@"========11111===== %@, f=%f",NSStringFromCGPoint(p),f);
+        
 //        if (self.scrollView.isDragging)
     
             // set headView postion
@@ -171,7 +175,7 @@ static char WawaHeadRefreshViewKey;
     {
         [UIView animateWithDuration:0.4f animations:^{
             self.transform =  CGAffineTransformScale(CGAffineTransformIdentity, 0.3f, 0.3f);
-            UIEdgeInsets contentInset = self.scrollView.contentInset;
+            UIEdgeInsets contentInset = self.scrollView.wawa_contentInset;
             contentInset.top -= WAWALOADINGHEIGHT;
             self.scrollView.contentInset = contentInset;
             [self setSelfOffSetY:self.scrollView.contentOffset.y];
@@ -202,7 +206,7 @@ static char WawaHeadRefreshViewKey;
 - (void)setSelfOffSetY:(CGFloat)y
 {
     CGRect oriRect = self.frame;
-    oriRect.origin.y =  y +  self.scrollView.contentInset.top;
+    oriRect.origin.y =  y +  self.scrollView.wawa_contentInset.top;
     self.frame = oriRect;
 }
 
@@ -220,7 +224,7 @@ static char WawaHeadRefreshViewKey;
     if (self.loadingView.isAnimation)
     {
         CGRect oriRect = self.frame;
-        oriRect.origin.y =  y +  self.scrollView.contentInset.top - WAWALOADINGHEIGHT;
+        oriRect.origin.y =  y +  self.scrollView.wawa_contentInset.top - WAWALOADINGHEIGHT;
         self.frame = oriRect;
          return;
     }

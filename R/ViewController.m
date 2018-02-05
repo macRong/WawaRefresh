@@ -63,7 +63,7 @@ UITableViewDelegate
 //    [str addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Courier-BoldOblique" size:15.0] range:NSMakeRange(19, 6)];
 //    self.tableView.wawaFootRefresh.attributedTitle = str;
 
-    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 88.0f)];
+    UIView *fot = [[UIView alloc]initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), 110.0f)];
                                                          fot.backgroundColor = [UIColor purpleColor];
                                                          self.tableView.tableFooterView = fot;
     
@@ -86,7 +86,7 @@ UITableViewDelegate
 {
     self.rows = @[].mutableCopy;
     
-    for (int i = 0; i <5; i++)
+    for (int i = 0; i <25; i++)
     {
         [self.rows addObject:[NSDate dateWithTimeIntervalSinceNow:-(i*30)]];
     }
