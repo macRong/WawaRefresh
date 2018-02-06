@@ -39,10 +39,10 @@ UITableViewDelegate
     
     
     __weak typeof(self)weakSelf = self;
-    [self.tableView wawaHeadRefresh:^{
-        typeof(weakSelf)Sself = weakSelf;
-        [Sself ok];
-    }];
+//    [self.tableView wawaHeadRefresh:^{
+//        typeof(weakSelf)Sself = weakSelf;
+//        [Sself ok];
+//    }];
     
     [self.tableView wawaFootRefresh:^{
         typeof(weakSelf)Sself = weakSelf;
@@ -109,6 +109,12 @@ UITableViewDelegate
 
 - (void)insertRowAtBottom
 {
+    // ????
+    if (self.rows.count == 13)
+    {
+//        return;
+    }
+    
     __weak typeof(self)weakSelf = self;
     
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1.0f * NSEC_PER_SEC);

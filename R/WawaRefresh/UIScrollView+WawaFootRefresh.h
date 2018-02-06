@@ -11,11 +11,6 @@
 
 static const CGFloat WAWAFOOTVIEWHEIGHT = 60.0f;
 
-typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
-    WawaFootRefreshPositionScrollViewBottom,
-    WawaFootRefreshPositionContentBottom /** sb模式 (暂时不提供提供) */
-};
-
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,8 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @interface WawaFootRefreshView: UIView
-
-@property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
 
 @property (nonatomic, assign, readonly) BOOL isAnimation;
 

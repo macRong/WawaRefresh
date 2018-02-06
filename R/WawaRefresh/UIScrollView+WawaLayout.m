@@ -26,7 +26,7 @@
 {
     if (@available(iOS 11.0, *))
     {
-        return self.safeAreaInsets;
+        return self.adjustedContentInset;
     }
     else
     {

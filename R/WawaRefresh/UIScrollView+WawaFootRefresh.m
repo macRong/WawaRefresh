@@ -12,12 +12,18 @@
 static char WawaFootRefreshViewKey;
 BOOL WawaPullBomb;
 
+typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
+    WawaFootRefreshPositionScrollViewBottom,
+};
+
 #pragma mark -WawaFootRefreshView
 
 @interface WawaFootRefreshView()
 {
     CFRunLoopObserverRef _observer;
 }
+
+@property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
 
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, weak) UIActivityIndicatorView *activityIndicatorView;
@@ -127,9 +133,8 @@ BOOL WawaPullBomb;
 {
     if (self.superview && newSuperview == nil)
     {
-//      UIScrollView *scrollView = (UIScrollView *)self.superview;
         UIScrollView *scrollView = (UIScrollView *)self.scrollView;
-        if (scrollView.isShowFootRefresh && self.isObserving)
+        if ([scrollView isKindOfClass:[UIScrollView class]] && scrollView.isShowFootRefresh && self.isObserving)
         {
             [scrollView removeObserver:self forKeyPath:@"contentOffset"];
             [scrollView removeObserver:self forKeyPath:@"contentSize"];
@@ -160,12 +165,11 @@ BOOL WawaPullBomb;
         self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     }
     
+    [self setNeedsLayout];
     
     // ?
     [self resetScOriginY];
     // ??
-    
-    [self setNeedsLayout];
 }
 
 - (void)noData:(NSString *)text
@@ -192,8 +196,8 @@ BOOL WawaPullBomb;
 
 - (void)resetScOriginY
 {
-    CGRect rect = self.frame;
-    CGFloat safeHeight = CGRectGetHeight(self.scrollView.bounds)- self.scrollView.wawa_safeContentInsets.top - self.scrollView.wawa_safeContentInsets.bottom - WAWAFOOTVIEWHEIGHT;
+    CGFloat safeHeight = CGRectGetHeight(self.scrollView.bounds)- self.scrollView.wawa_safeContentInsets.top - self.scrollView.wawa_safeContentInsets.bottom ;// - WAWAFOOTVIEWHEIGHT;
+    CGRect rect = self.bounds;
     if (self.scrollView.contentSize.height >= safeHeight)
     {
         CGFloat fvalue = self.scrollView.contentSize.height;
@@ -202,8 +206,11 @@ BOOL WawaPullBomb;
             NSLog(@"222222222 fvalue=%f, safeHeight=%f",fvalue,safeHeight);
             rect.origin.y = fvalue;
             self.frame = rect;
-            [self setNeedsLayout];
         }
+    }else
+    {
+        rect.origin.y = safeHeight;
+        self.frame = rect;
     }
 }
 
@@ -215,7 +222,6 @@ BOOL WawaPullBomb;
     {
         return;
     }
-    
     
     // ???
     [self resetScOriginY];
@@ -249,14 +255,13 @@ BOOL WawaPullBomb;
 
 - (void)resetScrollViewInsets
 {
-//    BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds);
-
-    [UIView animateWithDuration:0.2 animations:^{
+    [UIView animateWithDuration:0.1 animations:^{
         UIEdgeInsets contentInset = self.scrollView.wawa_contentInset;
         contentInset.bottom += WAWAFOOTVIEWHEIGHT;
         self.scrollView.contentInset = contentInset;
     }];
 }
+
 
 BOOL con ;
 - (void)bomb
@@ -272,16 +277,9 @@ BOOL con ;
     }
 }
 
-- (void)setFootScrollPosition:(CGFloat)value
-{
-    CGRect rect = self.frame;
-    CGFloat fvalue = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? value : value - self.scrollView.wawa_contentInset.top - self.scrollView.wawa_contentInset.bottom;
-    rect.origin.y = fvalue;
-    self.frame = rect;
-}
-
 - (void)setFootContentPosition:(CGFloat)value
 {
+    NSLog(@"====== setFootContentPosition");
     CGRect rect = self.frame;
     rect.origin.y = self.scrollView.contentSize.height /* ? */ - WAWAFOOTVIEWHEIGHT;
     self.frame = rect;
@@ -327,25 +325,13 @@ BOOL con ;
 {
     if ([keyPath isEqualToString:@"contentOffset"])
     {
-        //        return; // ??
-        
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         [self scrollViewContentOffsetY:pin.y];
     }
     else if([keyPath isEqualToString:@"contentSize"])
     {
         [self layoutSubviews];
-        
-        if (self.footRefreshPosition == WawaFootRefreshPositionScrollViewBottom)
-        {
-            CGFloat yOrigin = MAX(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-            [self setFootScrollPosition:yOrigin];
-        }
-        else
-        {
-            CGFloat yOrigin = MIN(self.scrollView.contentSize.height, self.scrollView.bounds.size.height);
-            [self setFootContentPosition:yOrigin];
-        }
+        [self resetScOriginY];
     }
 }
 
