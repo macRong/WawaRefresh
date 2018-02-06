@@ -94,6 +94,7 @@
 		AE69AF07200796F200CA7721 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AE69AF05200796F200CA7721 /* LaunchScreen.storyboard */; };
 		AE69AF0A200796F200CA7721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AE69AF09200796F200CA7721 /* main.m */; };
 		AE69AF372009F40C00CA7721 /* WawaLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = AE69AF362009F40C00CA7721 /* WawaLoadingView.m */; };
+		AE7E91A62028422A00386909 /* UIScrollView+WawaLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = AE7E91A52028422A00386909 /* UIScrollView+WawaLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -271,6 +272,8 @@
 		AE69AF09200796F200CA7721 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		AE69AF352009F40C00CA7721 /* WawaLoadingView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawaLoadingView.h; sourceTree = "<group>"; };
 		AE69AF362009F40C00CA7721 /* WawaLoadingView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WawaLoadingView.m; sourceTree = "<group>"; };
+		AE7E91A42028422A00386909 /* UIScrollView+WawaLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+WawaLayout.h"; sourceTree = "<group>"; };
+		AE7E91A52028422A00386909 /* UIScrollView+WawaLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+WawaLayout.m"; sourceTree = "<group>"; };
 		AED64A132011A7E400188BC6 /* WawaRefresh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WawaRefresh.h; sourceTree = "<group>"; };
 		AED64A152011AA6700188BC6 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -608,6 +611,8 @@
 				849A96142010FE1100D4AAFC /* UIScrollView+WawaHeadRefresh.m */,
 				849A96162010FE2300D4AAFC /* UIScrollView+WawaFootRefresh.h */,
 				849A96172010FE2300D4AAFC /* UIScrollView+WawaFootRefresh.m */,
+				AE7E91A42028422A00386909 /* UIScrollView+WawaLayout.h */,
+				AE7E91A52028422A00386909 /* UIScrollView+WawaLayout.m */,
 			);
 			path = WawaRefresh;
 			sourceTree = "<group>";
@@ -699,6 +704,7 @@
 				844E45BE2013B4C500B77495 /* FLEXNetworkTransactionDetailTableViewController.m in Sources */,
 				844E45B42013B4C500B77495 /* FLEXViewControllerExplorerViewController.m in Sources */,
 				844E45D52013B4C600B77495 /* FLEXArgumentInputNotSupportedView.m in Sources */,
+				AE7E91A62028422A00386909 /* UIScrollView+WawaLayout.m in Sources */,
 				844E45DF2013B4C600B77495 /* FLEXSystemLogMessage.m in Sources */,
 				844E45C12013B4C500B77495 /* FLEXToolbarItem.m in Sources */,
 				844E45F02013B4C600B77495 /* FLEXHierarchyTableViewController.m in Sources */,
@@ -900,14 +906,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 92TS993A24;
+				DEVELOPMENT_TEAM = 22DW794HFD;
 				GCC_PREFIX_HEADER = "$(SRCROOT)//PrefixHeader.pch";
 				INFOPLIST_FILE = R/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.yixia.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -916,14 +925,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 92TS993A24;
+				DEVELOPMENT_TEAM = 22DW794HFD;
 				GCC_PREFIX_HEADER = "$(SRCROOT)//PrefixHeader.pch";
 				INFOPLIST_FILE = R/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.yixia.test;
+				PRODUCT_BUNDLE_IDENTIFIER = com.test.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

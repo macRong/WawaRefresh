@@ -35,13 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WawaHeadRefreshView: UIView
 
-@property (nonatomic, assign, readonly) BOOL isLoading;
+@property (nonatomic, assign, readonly) BOOL isAnimation;
 
 - (void)stopAnimation;
 
 @end
 
 NS_ASSUME_NONNULL_END
-
-
 

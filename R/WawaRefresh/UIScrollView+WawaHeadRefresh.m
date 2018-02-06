@@ -10,7 +10,7 @@
 #import "WawaLoadingView.h"
 #import <objc/runtime.h>
 
-
+extern BOOL WawaPullBomb;
 #pragma mark -############################# WawaHeadView #################################################
 
 @interface WawaHeadRefreshView()
@@ -21,6 +21,7 @@
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, weak) WawaLoadingView *loadingView;
 @property (nonatomic, copy) dispatch_block_t startRefreshActionHandler;
+@property (nonatomic, assign) BOOL isObserving;
 
 @end
 
@@ -56,13 +57,10 @@ static char WawaHeadRefreshViewKey;
         }
         
         WawaHeadRefreshView *headView = [[WawaHeadRefreshView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, WAWALOADINGHEIGHT)];
+        self.wawaHeadRefresh = headView;
         headView.scrollView = self;
         headView.startRefreshActionHandler = actionHandler;
-        //    headView.backgroundColor = [UIColor blueColor];
-        [self addSubview:headView];
-        [self sendSubviewToBack:headView];
         
-        self.wawaHeadRefresh = headView;
         self.isShowHeadRefresh = YES;
     }
 }
@@ -72,9 +70,15 @@ static char WawaHeadRefreshViewKey;
 
 - (void)setWawaHeadRefresh:(WawaHeadRefreshView *)wawaHeadRefresh
 {
-    [self willChangeValueForKey:@"WawaHeadRefreshView"];
-    objc_setAssociatedObject(self, &WawaHeadRefreshViewKey, wawaHeadRefresh, OBJC_ASSOCIATION_ASSIGN);
-    [self didChangeValueForKey:@"WawaHeadRefreshView"];
+    if (wawaHeadRefresh != self.wawaHeadRefresh)
+    {
+        [self.wawaHeadRefresh removeFromSuperview];
+        [self insertSubview:wawaHeadRefresh atIndex:0];
+        
+        [self willChangeValueForKey:@"wawaHeadRefresh"];
+        objc_setAssociatedObject(self, &WawaHeadRefreshViewKey, wawaHeadRefresh, OBJC_ASSOCIATION_ASSIGN);
+        [self didChangeValueForKey:@"wawaHeadRefresh"];
+    }
 }
 
 - (WawaHeadRefreshView *)wawaHeadRefresh
@@ -84,7 +88,10 @@ static char WawaHeadRefreshViewKey;
 
 - (void)setIsShowHeadRefresh:(BOOL)isShowHeadRefresh
 {
-    [self addObserver:self.wawaHeadRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    if (!self.wawaHeadRefresh.isObserving)
+    {
+        [self addObserver:self.wawaHeadRefresh forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:nil];
+    }
 //        [self addObserver:self.wawaHeadRefresh forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
     //    [self addObserver:self.wawaHeadRefresh forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
 }
@@ -96,7 +103,7 @@ static char WawaHeadRefreshViewKey;
 
 @implementation WawaHeadRefreshView
 {
-    BOOL _isLoading;
+    BOOL _isAnimation;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -114,10 +121,11 @@ static char WawaHeadRefreshViewKey;
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
-    if (self.superview && newSuperview == nil)
+    if (self.superview && newSuperview == nil && self.isObserving)
     {
         UIScrollView *scrollView = (UIScrollView *)self.superview;
         [scrollView removeObserver:self forKeyPath:@"contentOffset"];
+        self.isObserving = NO;
     }
 }
 
@@ -131,12 +139,18 @@ static char WawaHeadRefreshViewKey;
             return;
         }
         
-//        NSLog(@"pin.y =%f",pin.y);
-        // set headView postion
-        [self setHeadViewPoisition:pin.y];
-
-        // set loading value
-        [self setLoadingPoint:pin.y];
+        CGPoint p = [self.scrollView.panGestureRecognizer velocityInView:self.scrollView];
+         CGFloat f =   self.scrollView.decelerationRate;
+//        NSLog(@"========11111===== %@, f=%f",NSStringFromCGPoint(p),f);
+        
+//        if (self.scrollView.isDragging)
+    
+            // set headView postion
+            [self setHeadViewPoisition:pin.y];
+            
+            // set loading value
+            [self setLoadingPoint:pin.y];
+        
         
 //        NSLog(@" ==== point = %@,self.frame=%f ,l=%f",NSStringFromCGPoint(pin),self.frame.origin.y,currentHeight*12/WAWALOADINGHEIGHT-12);
     }
@@ -164,7 +178,7 @@ static char WawaHeadRefreshViewKey;
     {
         [UIView animateWithDuration:0.4f animations:^{
             self.transform =  CGAffineTransformScale(CGAffineTransformIdentity, 0.3f, 0.3f);
-            UIEdgeInsets contentInset = self.scrollView.contentInset;
+            UIEdgeInsets contentInset = self.scrollView.wawa_contentInset;
             contentInset.top -= WAWALOADINGHEIGHT;
             self.scrollView.contentInset = contentInset;
             [self setSelfOffSetY:self.scrollView.contentOffset.y];
@@ -179,13 +193,13 @@ static char WawaHeadRefreshViewKey;
 {
     if (_loadingView)
     {
-        [self.loadingView stopAnimation];
+        [_loadingView stopAnimation];
 
         [_loadingView removeFromSuperview];
         _loadingView = nil;
     }
 
-    _isLoading = NO;
+    _isAnimation = NO;
     self.transform = CGAffineTransformIdentity;
 }
 
@@ -195,7 +209,7 @@ static char WawaHeadRefreshViewKey;
 - (void)setSelfOffSetY:(CGFloat)y
 {
     CGRect oriRect = self.frame;
-    oriRect.origin.y =  y +  self.scrollView.contentInset.top;
+    oriRect.origin.y =  y +  self.scrollView.wawa_contentInset.top;
     self.frame = oriRect;
 }
 
@@ -213,13 +227,11 @@ static char WawaHeadRefreshViewKey;
     if (self.loadingView.isAnimation)
     {
         CGRect oriRect = self.frame;
-        oriRect.origin.y =  y +  self.scrollView.contentInset.top - WAWALOADINGHEIGHT;
+        oriRect.origin.y =  y +  self.scrollView.wawa_contentInset.top - WAWALOADINGHEIGHT;
         self.frame = oriRect;
-//        NSLog(@"111111111111111111111111");
          return;
     }
     
-//    NSLog(@"22222222222222222");
     [self setSelfOffSetY:y];
 }
 
@@ -235,14 +247,15 @@ static char WawaHeadRefreshViewKey;
     {
         _preValue = value;
     }
-    
+        
     CGFloat currentHeight = fabs(_preValue - value);
     [self.loadingView setLoaingValue:currentHeight*12.0f/WAWALOADINGHEIGHT-12.0f];
     
     __weak typeof(self)weakSelf = self;
     self.loadingView.loadingBlock = ^{
         typeof(weakSelf)SSelf = weakSelf;
-        _isLoading = YES;
+        _isAnimation = YES;
+        WawaPullBomb = YES;
         SSelf.startRefreshActionHandler();
         
         [UIView animateWithDuration:0.2 animations:^{

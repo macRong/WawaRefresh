@@ -9,15 +9,12 @@
 #import <UIKit/UIKit.h>
 @class WawaFootRefreshView;
 
-static const CGFloat WAWAFOOTVIEWHEIGHT = 64.0f;
-
-typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
-    WawaFootRefreshPositionScrollViewBottom,
-    WawaFootRefreshPositionContentBottom /** sb模式 */
-};
+static const CGFloat WAWAFOOTVIEWHEIGHT = 60.0f;
 
 
 NS_ASSUME_NONNULL_BEGIN
+
+#pragma mark -
 
 @interface UIScrollView (WawaFootRefresh)
 
@@ -31,18 +28,33 @@ NS_ASSUME_NONNULL_BEGIN
 NS_ASSUME_NONNULL_END
 
 
+/// ------------------------------------------------------------------------------------------------
+
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark -
+
 @interface WawaFootRefreshView: UIView
 
-@property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
+@property (nonatomic, assign, readonly) BOOL isAnimation;
 
-///////////////////////// extent ////////////////////////////////////////////////
+- (void)startAnimating;
+- (void)stopAnimating;
+- (void)noData:(NSString *)text;
+
+
+
+
+#pragma mark - Extent(optional)
+
+/** 距离scrollView底部还剩多少距离开始加载. default: 0 .*/
+@property (nonatomic, assign) CGFloat distanceBottom;
 @property (nonatomic, readwrite) UIActivityIndicatorViewStyle activityIndicatorViewStyle;
-
-- (void)stopAnimation;
+@property (nullable, nonatomic, strong) NSAttributedString *attributedTitle UI_APPEARANCE_SELECTOR;
 
 @end
 
 NS_ASSUME_NONNULL_END
+
+
