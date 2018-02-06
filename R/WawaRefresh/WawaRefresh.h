@@ -20,7 +20,8 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  question:
  
  0. Hidden
- 0.1. head Loading sc上
+ 0.1. 手指在屏幕上一直上拉处理， 取消runloop kCFRunLoopBeforeWaiting
+ 0.2. head Loading sc上
 
  1.快速滑动处理，offset不准
  2.Timer, Runloop
@@ -43,36 +44,3 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  */
 
 
-/*
- - (void)setInsetTop:(CGFloat)insetTop{
- UIEdgeInsets inset = self.contentInset;
- inset.top = insetTop;
- if (@available(iOS 11.0, *)) {
- inset.top -= (self.adjustedContentInset.top - self.contentInset.top);
- }
- self.contentInset = inset;
- }
- 
- - (CGFloat)insetBottom{
- return self.realContentInset.bottom;
- }
- 
- - (void)setInsetBottom:(CGFloat)insetBottom{
- UIEdgeInsets inset = self.contentInset;
- inset.bottom = insetBottom;
- if (@available(iOS 11.0, *)) {
- inset.bottom -= (self.adjustedContentInset.bottom - self.contentInset.bottom);
- }
- self.contentInset = inset;
- }
- 
- - (UIEdgeInsets)realContentInset{
- if (@available(iOS 11.0, *)) {
- return self.adjustedContentInset;
- } else {
- return self.contentInset;
- }
- }
- 
- 
- */

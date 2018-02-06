@@ -117,11 +117,11 @@ UITableViewDelegate
     
     __weak typeof(self)weakSelf = self;
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1.0f * NSEC_PER_SEC);
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, .1f * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //        [weakSelf.tableView beginUpdates];
   
-        for (int i= 0; i < 1; i ++)
+        for (int i= 0; i < 9; i ++)
         {
             [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
         }

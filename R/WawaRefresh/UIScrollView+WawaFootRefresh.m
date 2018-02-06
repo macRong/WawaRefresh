@@ -166,10 +166,6 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     }
     
     [self setNeedsLayout];
-    
-    // ?
-    [self resetScOriginY];
-    // ??
 }
 
 - (void)noData:(NSString *)text
@@ -203,7 +199,6 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
         CGFloat fvalue = self.scrollView.contentSize.height;
         if (fvalue != CGRectGetMinY(rect))
         {
-            NSLog(@"222222222 fvalue=%f, safeHeight=%f",fvalue,safeHeight);
             rect.origin.y = fvalue;
             self.frame = rect;
         }
@@ -222,12 +217,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     {
         return;
     }
-    
-    // ???
-    [self resetScOriginY];
-    // ???
-    
-    
+
     [self resetValueFromTopBomb];
     
     if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
@@ -325,11 +315,13 @@ BOOL con ;
 {
     if ([keyPath isEqualToString:@"contentOffset"])
     {
+        NSLog(@"boser contentOffset ===== %d",self.isPreDragging);
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         [self scrollViewContentOffsetY:pin.y];
     }
     else if([keyPath isEqualToString:@"contentSize"])
     {
+        NSLog(@"===== boser contentSize  %d",self.isPreDragging);
         [self layoutSubviews];
         [self resetScOriginY];
     }
