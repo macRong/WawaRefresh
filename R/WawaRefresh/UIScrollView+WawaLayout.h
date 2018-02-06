@@ -14,5 +14,7 @@
 //@property (nonatomic) CGFloat insetBottom;
 
 @property (assign, readonly) UIEdgeInsets wawa_contentInset;
+@property (assign, readonly) UIEdgeInsets wawa_safeContentInsets;
+
 
 @end

@@ -20,6 +20,7 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  question:
  
  0. Hidden
+ 0.1. head Loading sc上
 
  1.快速滑动处理，offset不准
  2.Timer, Runloop

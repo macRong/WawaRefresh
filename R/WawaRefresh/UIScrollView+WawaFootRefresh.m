@@ -56,7 +56,7 @@ BOOL WawaPullBomb;
     footRefreshView.scrollView = self;
     [self addSubview:footRefreshView];
     
-    self.wawaFootRefresh.originScroll_BottomInset = self.contentInset.bottom;
+    self.wawaFootRefresh.originScroll_BottomInset = self.wawa_contentInset.bottom;
     self.wawaFootRefresh = footRefreshView;
     self.wawaFootRefresh.footRefreshPosition = position;
     self.isShowFootRefresh = YES;
@@ -127,7 +127,7 @@ BOOL WawaPullBomb;
 {
     if (self.superview && newSuperview == nil)
     {
-//        UIScrollView *scrollView = (UIScrollView *)self.superview;
+//      UIScrollView *scrollView = (UIScrollView *)self.superview;
         UIScrollView *scrollView = (UIScrollView *)self.scrollView;
         if (scrollView.isShowFootRefresh && self.isObserving)
         {
@@ -158,35 +158,12 @@ BOOL WawaPullBomb;
         NSLog(@"+++++++++ stopAnimating");
         [self.activityIndicatorView stopAnimating];
         self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            // ??????
-//            BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds)+self.scrollView.contentInset.bottom;
-//            NSLog(@"============isadd222 = %d, ll =%f ,rr=%f",isAddInset,self.scrollView.contentSize.height, CGRectGetHeight(self.scrollView.bounds)+self.scrollView.contentInset.bottom);
-//
-//
-//            if (isAddInset)
-//            {
-//                if (!con)
-//                {
-//                    [UIView animateWithDuration:0.2 animations:^{
-//
-//                        CGRect rec = self.frame;
-//                        rec.origin.y = self.scrollView.contentSize.height;
-//                        self.frame = rec;
-//                        NSLog(@"移动");
-//                        UIEdgeInsets contentInset = self.scrollView.contentInset;
-//                        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
-////                        contentInset.bottom =0;
-//                        self.scrollView.contentInset = contentInset;
-//                    }];
-//                    con = YES;
-//                }
-//            }
-            // ?????
-        });
-
     }
+    
+    
+    // ?
+    [self resetScOriginY];
+    // ??
     
     [self setNeedsLayout];
 }
@@ -211,16 +188,148 @@ BOOL WawaPullBomb;
 }
 
 
+#pragma mark - Private
+
+- (void)resetScOriginY
+{
+    CGRect rect = self.frame;
+    CGFloat safeHeight = CGRectGetHeight(self.scrollView.bounds)- self.scrollView.wawa_safeContentInsets.top - self.scrollView.wawa_safeContentInsets.bottom - WAWAFOOTVIEWHEIGHT;
+    if (self.scrollView.contentSize.height >= safeHeight)
+    {
+        CGFloat fvalue = self.scrollView.contentSize.height;
+        if (fvalue != CGRectGetMinY(rect))
+        {
+            NSLog(@"222222222 fvalue=%f, safeHeight=%f",fvalue,safeHeight);
+            rect.origin.y = fvalue;
+            self.frame = rect;
+            [self setNeedsLayout];
+        }
+    }
+}
+
+// ????
+- (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
+{
+//    NSLog(@"contentOffsetY===== %f",contentOffsetY);
+    if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
+    {
+        return;
+    }
+    
+    
+    // ???
+    [self resetScOriginY];
+    // ???
+    
+    
+    [self resetValueFromTopBomb];
+    
+    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
+        self.scrollView.isDragging &&
+        !self.isPreDragging &&
+        !self.isNodata)
+    {
+        [self runloopWaitingStateObserve];
+
+        if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
+        {
+            [self bomb];
+        }
+    }
+}
+
+- (void)resetValueFromTopBomb
+{
+    if (WawaPullBomb)
+    {
+        self.isNodata = !WawaPullBomb;
+        self.bottomHintLabel.text = self.attributedTitle.string;
+    }
+}
+
+- (void)resetScrollViewInsets
+{
+//    BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds);
+
+    [UIView animateWithDuration:0.2 animations:^{
+        UIEdgeInsets contentInset = self.scrollView.wawa_contentInset;
+        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
+        self.scrollView.contentInset = contentInset;
+    }];
+}
+
+BOOL con ;
+- (void)bomb
+{
+    NSLog(@" 💥 ");
+    [self.activityIndicatorView startAnimating];
+    self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
+    [self setNeedsLayout];
+    
+    if (self.startRefreshActionHandler)
+    {
+        self.startRefreshActionHandler();
+    }
+}
+
+- (void)setFootScrollPosition:(CGFloat)value
+{
+    CGRect rect = self.frame;
+    CGFloat fvalue = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? value : value - self.scrollView.wawa_contentInset.top - self.scrollView.wawa_contentInset.bottom;
+    rect.origin.y = fvalue;
+    self.frame = rect;
+}
+
+- (void)setFootContentPosition:(CGFloat)value
+{
+    CGRect rect = self.frame;
+    rect.origin.y = self.scrollView.contentSize.height /* ? */ - WAWAFOOTVIEWHEIGHT;
+    self.frame = rect;
+}
+
+- (float)widthForStringHeight:(float)height
+{
+    CGSize sizeToFit = [self.bottomHintLabel sizeThatFits:CGSizeMake(CGRectGetWidth(self.bounds)-CGRectGetWidth(self.activityIndicatorView.bounds),height)];
+    return sizeToFit.width;
+}
+
+- (UIFont *)wawa_FontOfSize:(CGFloat)size name:(NSString *)name
+{
+    UIFont *font = [UIFont fontWithName:name size:size];
+    
+    if(font == nil)
+    {
+        font = [UIFont systemFontOfSize:size];
+    }
+    
+    return font;
+}
+
+- (void)layoutSubviews
+{
+    CGFloat widht = [self widthForStringHeight:WAWAFOOTVIEWHEIGHT];
+ 
+    [UIView animateWithDuration:0.1f animations:^{
+        CGFloat originX = (CGRectGetWidth(self.bounds)-(widht+CGRectGetWidth(self.activityIndicatorView.bounds)+2))/2;
+        CGRect activiRect = self.activityIndicatorView.frame;
+        activiRect.origin.x =originX;
+        self.activityIndicatorView.frame = activiRect;
+        
+        CGFloat bottomLabelOriginY = self.activityIndicatorView.isHidden ? (CGRectGetWidth(self.bounds) - widht)/2 : CGRectGetMaxX(self.activityIndicatorView.frame)+2 ;
+        self.bottomHintLabel.frame = CGRectMake(bottomLabelOriginY, 0, widht, CGRectGetHeight(self.bounds));
+    }];
+}
+
+
 #pragma mark - Observer
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"contentOffset"])
     {
-        return; // ??
-
-        CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
+        //        return; // ??
         
+        CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         [self scrollViewContentOffsetY:pin.y];
     }
     else if([keyPath isEqualToString:@"contentSize"])
@@ -276,117 +385,6 @@ BOOL WawaPullBomb;
 - (void)resetDra
 {
     self.isPreDragging = NO;
-}
-
-
-#pragma mark - Private
-
-- (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
-{
-//    NSLog(@"contentOffsetY===== %f",contentOffsetY);
-    if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
-    {
-        return;
-    }
-    
-    [self resetValueFromTopBomb];
-    
-    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
-        self.scrollView.isDragging &&
-        !self.isPreDragging &&
-        !self.isNodata)
-    {
-        [self runloopWaitingStateObserve];
-
-        if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
-        {
-            [self bomb];
-        }
-    }
-}
-
-- (void)resetValueFromTopBomb
-{
-    if (WawaPullBomb)
-    {
-        self.isNodata = !WawaPullBomb;
-        self.bottomHintLabel.text = self.attributedTitle.string;
-    }
-}
-
-- (void)resetScrollViewInsets
-{
-//    BOOL isAddInset = self.scrollView.contentSize.height >= CGRectGetHeight(self.scrollView.bounds);
-
-    [UIView animateWithDuration:0.2 animations:^{
-        UIEdgeInsets contentInset = self.scrollView.contentInset;
-        contentInset.bottom += WAWAFOOTVIEWHEIGHT;
-        self.scrollView.contentInset = contentInset;
-    }];
-}
-
-BOOL con ;
-- (void)bomb
-{
-    NSLog(@" 💥 ");
-    [self.activityIndicatorView startAnimating];
-    self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
-    [self setNeedsLayout];
-    
-    if (self.startRefreshActionHandler)
-    {
-        self.startRefreshActionHandler();
-    }
-}
-
-// ????
-- (void)setFootScrollPosition:(CGFloat)value
-{
-    CGRect rect = self.frame;
-    CGFloat fvalue = self.scrollView.contentSize.height > CGRectGetHeight(self.scrollView.bounds) ? value : value - self.scrollView.wawa_contentInset.top - self.scrollView.wawa_contentInset.bottom;
-    rect.origin.y = fvalue;
-    NSLog(@"aaaaaaa value=%f ,sOrigingY=%f, self.scrollView.wawa_contentInset.bottom =%f ",value ,self.scrollView.wawa_contentInset.top, self.scrollView.wawa_contentInset.bottom);
-    self.frame = rect;
-}
-
-- (void)setFootContentPosition:(CGFloat)value
-{
-    CGRect rect = self.frame;
-    rect.origin.y = self.scrollView.contentSize.height /* ? */ - WAWAFOOTVIEWHEIGHT;
-    self.frame = rect;
-}
-
-- (float)widthForStringHeight:(float)height
-{
-    CGSize sizeToFit = [self.bottomHintLabel sizeThatFits:CGSizeMake(CGRectGetWidth(self.bounds)-CGRectGetWidth(self.activityIndicatorView.bounds),height)];
-    return sizeToFit.width;
-}
-
-- (UIFont *)wawa_FontOfSize:(CGFloat)size name:(NSString *)name
-{
-    UIFont *font = [UIFont fontWithName:name size:size];
-    
-    if(font == nil)
-    {
-        font = [UIFont systemFontOfSize:size];
-    }
-    
-    return font;
-}
-
-- (void)layoutSubviews
-{
-    CGFloat widht = [self widthForStringHeight:WAWAFOOTVIEWHEIGHT];
- 
-    [UIView animateWithDuration:0.1f animations:^{
-        CGFloat originX = (CGRectGetWidth(self.bounds)-(widht+CGRectGetWidth(self.activityIndicatorView.bounds)+2))/2;
-        CGRect activiRect = self.activityIndicatorView.frame;
-        activiRect.origin.x =originX;
-        self.activityIndicatorView.frame = activiRect;
-        
-        CGFloat bottomLabelOriginY = self.activityIndicatorView.isHidden ? (CGRectGetWidth(self.bounds) - widht)/2 : CGRectGetMaxX(self.activityIndicatorView.frame)+2 ;
-        self.bottomHintLabel.frame = CGRectMake(bottomLabelOriginY, 0, widht, CGRectGetHeight(self.bounds));
-    }];
 }
 
 

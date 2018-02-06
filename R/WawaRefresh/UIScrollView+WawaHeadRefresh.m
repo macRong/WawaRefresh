@@ -57,13 +57,10 @@ static char WawaHeadRefreshViewKey;
         }
         
         WawaHeadRefreshView *headView = [[WawaHeadRefreshView alloc] initWithFrame:CGRectMake(0, 0, self.bounds.size.width, WAWALOADINGHEIGHT)];
+        self.wawaHeadRefresh = headView;
         headView.scrollView = self;
         headView.startRefreshActionHandler = actionHandler;
-        //    headView.backgroundColor = [UIColor blueColor];
-        [self addSubview:headView];
-        [self sendSubviewToBack:headView];
         
-        self.wawaHeadRefresh = headView;
         self.isShowHeadRefresh = YES;
     }
 }
@@ -73,9 +70,15 @@ static char WawaHeadRefreshViewKey;
 
 - (void)setWawaHeadRefresh:(WawaHeadRefreshView *)wawaHeadRefresh
 {
-    [self willChangeValueForKey:@"WawaHeadRefreshView"];
-    objc_setAssociatedObject(self, &WawaHeadRefreshViewKey, wawaHeadRefresh, OBJC_ASSOCIATION_ASSIGN);
-    [self didChangeValueForKey:@"WawaHeadRefreshView"];
+    if (wawaHeadRefresh != self.wawaHeadRefresh)
+    {
+        [self.wawaHeadRefresh removeFromSuperview];
+        [self insertSubview:wawaHeadRefresh atIndex:0];
+        
+        [self willChangeValueForKey:@"wawaHeadRefresh"];
+        objc_setAssociatedObject(self, &WawaHeadRefreshViewKey, wawaHeadRefresh, OBJC_ASSOCIATION_ASSIGN);
+        [self didChangeValueForKey:@"wawaHeadRefresh"];
+    }
 }
 
 - (WawaHeadRefreshView *)wawaHeadRefresh

@@ -22,4 +22,16 @@
     }
 }
 
+- (UIEdgeInsets)wawa_safeContentInsets
+{
+    if (@available(iOS 11.0, *))
+    {
+        return self.safeAreaInsets;
+    }
+    else
+    {
+        return self.contentInset;
+    }
+}
+
 @end

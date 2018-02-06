@@ -86,7 +86,7 @@ UITableViewDelegate
 {
     self.rows = @[].mutableCopy;
     
-    for (int i = 0; i <25; i++)
+    for (int i = 0; i <8; i++)
     {
         [self.rows addObject:[NSDate dateWithTimeIntervalSinceNow:-(i*30)]];
     }
@@ -111,7 +111,7 @@ UITableViewDelegate
 {
     __weak typeof(self)weakSelf = self;
     
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 3.0f * NSEC_PER_SEC);
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 1.0f * NSEC_PER_SEC);
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //        [weakSelf.tableView beginUpdates];
   
