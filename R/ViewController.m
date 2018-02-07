@@ -120,13 +120,15 @@ UITableViewDelegate
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 //        [weakSelf.tableView beginUpdates];
   
-        for (int i= 0; i < 9; i ++)
+        for (int i= 0; i < 1; i ++)
         {
             [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
         }
-        
+
         [self.tableView reloadData];
-//        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+        
+//        [weakSelf.rows addObject:[weakSelf.rows.lastObject dateByAddingTimeInterval:-60]];
+//        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationBottom];
 //        [weakSelf.tableView endUpdates];
         
         [self.tableView.wawaFootRefresh stopAnimating];

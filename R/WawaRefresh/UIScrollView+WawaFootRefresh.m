@@ -28,11 +28,13 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 
 @property (nonatomic, weak) UILabel *bottomHintLabel;
 
+//@property (nonatomic, assign) CGFloat stop_ScoriginY;
 @property (nonatomic, assign) CGFloat originScroll_BottomInset;
 @property (nonatomic, assign, readwrite) BOOL isAnimation;
-@property (nonatomic, assign) BOOL isPreDragging;
+//@property (nonatomic, assign) BOOL isPreDragging;
 @property (nonatomic, assign) BOOL isNodata;
 @property (nonatomic, assign) BOOL isObserving;
+@property (nonatomic, assign) BOOL isStop;
 
 
 - (void)resetScrollViewInsets;
@@ -119,11 +121,16 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     if (self)
     {
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        
+        [self initVariable];
         (void)self.activityIndicatorView;
     }
     
     return self;
+}
+
+- (void)initVariable
+{
+//    self.stop_ScoriginY = CGFLOAT_MIN;
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
@@ -146,23 +153,24 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 - (void)startAnimating
 {
     self.isNodata = NO;
-    
     self.bottomHintLabel.attributedText = self.attributedTitle;
-    [self setNeedsLayout];
+    [self bomb];
 }
 
 - (void)stopAnimating
 {
-    self.isPreDragging = self.scrollView.isDragging;
+    self.isStop = YES;
 
     if (self.activityIndicatorView.isAnimating)
     {
-        NSLog(@"+++++++++ stopAnimating");
+        NSLog(@"🎈🎈🎈");
         [self.activityIndicatorView stopAnimating];
         self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     }
     
     [self setNeedsLayout];
+    
+    [self resetScOriginY];
 }
 
 - (void)noData:(NSString *)text
@@ -185,7 +193,61 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 }
 
 
+#pragma mark - Observer
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"contentOffset"])
+    {
+        CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
+        [self scrollViewContentOffsetY:pin.y];
+    }
+    else if([keyPath isEqualToString:@"contentSize"])
+    {
+        [self layoutSubviews];
+        [self resetScOriginY];
+    }
+}
+
+
 #pragma mark - Private
+
+- (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
+{
+    CGPoint point = [self.scrollView.panGestureRecognizer velocityInView:self.scrollView];
+//    NSLog(@"ooooooooooooself.scrollView.contentOffset.y =%f,tracking=%d,pointY=%f ",self.scrollView.contentOffset.y,self.scrollView.tracking,point.y);
+
+    if (self.isStop && !self.scrollView.tracking)
+    {
+        self.isStop = NO;
+    }
+    
+    if (point.y <= 0 &&
+        //  contentOffsetY <= -WAWAFOOTVIEWHEIGHT &&
+        self.isStop)
+    {
+        return;
+    }
+    
+    NSLog(@"=====contentOffsetY=%f ,isstop=%d, point.y=%f, scrollView.isDragging=%d",contentOffsetY,self.isStop,point.y,self.scrollView.isDragging);
+
+    if (point.y > 0)
+    {
+        return;
+    }
+    
+    [self resetValueFromTopBomb];
+    
+    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
+        self.scrollView.isDragging &&
+        !self.isNodata)
+    {
+        if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
+        {
+            [self bomb];
+        }
+    }
+}
 
 - (void)resetScOriginY
 {
@@ -199,37 +261,17 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
             rect.origin.y = fvalue;
             self.frame = rect;
         }
-    }else
+    }
+    else
     {
         rect.origin.y = safeHeight;
         self.frame = rect;
     }
+    
+    NSLog(@"🌲 🌲 🌲 =%f",self.scrollView.contentOffset.y);
+//    self.stop_ScoriginY = self.scrollView.contentOffset.y;
 }
 
-// ????
-- (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
-{
-    CGPoint point = [self.scrollView.panGestureRecognizer velocityInView:self.scrollView];
-    NSLog(@"llllllllllll point =%@",NSStringFromCGPoint(point));
-    
-    if (point.y > 0 && contentOffsetY <= -WAWAFOOTVIEWHEIGHT)
-    {
-        return;
-    }
-
-    [self resetValueFromTopBomb];
-    
-    if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
-        self.scrollView.isDragging &&
-        !self.isPreDragging &&
-        !self.isNodata)
-    {
-        if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
-        {
-            [self bomb];
-        }
-    }
-}
 
 - (void)resetValueFromTopBomb
 {
@@ -249,8 +291,6 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     }];
 }
 
-
-BOOL con ;
 - (void)bomb
 {
     NSLog(@" 💥 ");
@@ -281,7 +321,6 @@ BOOL con ;
 - (UIFont *)wawa_FontOfSize:(CGFloat)size name:(NSString *)name
 {
     UIFont *font = [UIFont fontWithName:name size:size];
-    
     if(font == nil)
     {
         font = [UIFont systemFontOfSize:size];
@@ -303,30 +342,6 @@ BOOL con ;
         CGFloat bottomLabelOriginY = self.activityIndicatorView.isHidden ? (CGRectGetWidth(self.bounds) - widht)/2 : CGRectGetMaxX(self.activityIndicatorView.frame)+2 ;
         self.bottomHintLabel.frame = CGRectMake(bottomLabelOriginY, 0, widht, CGRectGetHeight(self.bounds));
     }];
-}
-
-
-#pragma mark - Observer
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"contentOffset"])
-    {
-//        NSLog(@"boser contentOffset ===== %d",self.isPreDragging);
-        CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
-        [self scrollViewContentOffsetY:pin.y];
-    }
-    else if([keyPath isEqualToString:@"contentSize"])
-    {
-//        NSLog(@"===== boser contentSize  %d",self.isPreDragging);
-        [self layoutSubviews];
-        [self resetScOriginY];
-    }
-}
-
-- (void)resetDra
-{
-    self.isPreDragging = NO;
 }
 
 

@@ -20,7 +20,7 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  question:
  
  0. Hidden
- 0.1. 手指在屏幕上一直上拉处理， 取消runloop kCFRunLoopBeforeWaiting
+ 0.1. 手指在屏幕上一直上拉处理， 取消runloop kCFRunLoopBeforeWaiting ✅ (在stop后获取offsetY是否和)
  0.2. head Loading sc上
 
  1.快速滑动处理，offset不准
@@ -34,13 +34,16 @@ static const CGFloat WAWALOADINGHEIGHT = 64.0f;
  9. Inset 各种情况测试
  10. 下拉大幅度， 松开会导致上拉时间 加判断
  11. 全局设置， 一旦设置全局有效（没有重置情况下） 单利config   // 第2版
- 12. 上拉提示‘暂无数据’， 再下拉处理自动除去‘暂无数据’状态
- 13. 满足distanceBottom时， foot下滑动，不应响应加载更多
+ 12. 上拉提示‘暂无数据’， 再下拉处理自动除去‘暂无数据’状态  ✅
+ 13. 满足distanceBottom时， foot下滑动，不应响应加载更多 ✅
  14. 自定义customView                                  // 第2版
  15. 暴露start loading stop 事件
  16. dragging是💥，不松手如果在满足加载更多条件处理
- 17. ContentBottom                                    // 第2版
+ 17.
  18. bottom暂无数据状态时，下拉自动解除bottom暂无状态 ✅
+ 19.
+ 
+ 
  */
 
 
