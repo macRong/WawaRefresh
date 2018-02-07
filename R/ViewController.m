@@ -39,10 +39,10 @@ UITableViewDelegate
     
     
     __weak typeof(self)weakSelf = self;
-//    [self.tableView wawaHeadRefresh:^{
-//        typeof(weakSelf)Sself = weakSelf;
-//        [Sself ok];
-//    }];
+    [self.tableView wawaHeadRefresh:^{
+        typeof(weakSelf)Sself = weakSelf;
+        [Sself ok];
+    }];
     
     [self.tableView wawaFootRefresh:^{
         typeof(weakSelf)Sself = weakSelf;
@@ -79,7 +79,6 @@ UITableViewDelegate
     
 //    _rView = [[WawaLoadingView alloc]initWithFrame:CGRectMake(120, 78,28.0f, 28.0f)];
 //    [self.view addSubview:_rView];
-    
 }
 
 - (void)initVar
