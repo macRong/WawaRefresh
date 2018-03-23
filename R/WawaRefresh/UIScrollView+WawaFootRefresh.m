@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 @property (nonatomic, weak) UILabel *bottomHintLabel;
 
 @property (nonatomic, assign) CGFloat originScroll_BottomInset;
-@property (nonatomic, assign, readwrite) BOOL isAnimation;
+@property (nonatomic, assign, readwrite) BOOL isRefreshing;
 @property (nonatomic, assign) BOOL isPreDragging;
 @property (nonatomic, assign) BOOL isNodata;
 @property (nonatomic, assign) BOOL isObserving;
@@ -146,7 +146,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 
 #pragma mark - Out
 
-- (void)startAnimating
+- (void)beginRefreshing
 {
     self.isNodata = NO;
     
@@ -154,7 +154,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     [self setNeedsLayout];
 }
 
-- (void)stopAnimating
+- (void)endRefreshing
 {
     self.isPreDragging = self.scrollView.isDragging;
 
@@ -173,9 +173,9 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     self.isNodata = YES;
     WawaPullBomb = NO;
     
-    if (self.isAnimation)
+    if (self.isRefreshing)
     {
-        [self stopAnimating];
+        [self endRefreshing];
     }
     
     if (self.bottomHintLabel.isHidden)
@@ -339,7 +339,7 @@ BOOL con ;
                                                        true,
                                                        0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity)
                                                        {
-                                                           if (!self.isAnimation)
+                                                           if (!self.isRefreshing)
                                                            {
                                                                [self performSelectorOnMainThread:@selector(resetDra) withObject:nil waitUntilDone:NO modes:@[NSDefaultRunLoopMode]];
                                                            }
@@ -392,7 +392,7 @@ BOOL con ;
 //    return self.activityIndicatorView.activityIndicatorViewStyle;
 //}
 
-- (BOOL)isAnimation
+- (BOOL)isRefreshing
 {
     return self.activityIndicatorView.isAnimating;
 }

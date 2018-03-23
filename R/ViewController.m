@@ -96,9 +96,9 @@ UITableViewDelegate
 {
     NSLog(@"💥");
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        BOOL s = self.tableView.wawaHeadRefresh.isAnimation;
+        BOOL s = self.tableView.wawaHeadRefresh.isRefreshing;
         NSLog(@"s = %d",s);
-        [self.tableView.wawaHeadRefresh stopAnimation];
+        [self.tableView.wawaHeadRefresh endRefreshing];
     });
 }
 
@@ -130,7 +130,7 @@ UITableViewDelegate
 //        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:weakSelf.rows.count-1 inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
 //        [weakSelf.tableView endUpdates];
         
-        [self.tableView.wawaFootRefresh stopAnimating];
+        [self.tableView.wawaFootRefresh endRefreshing];
 //        [self.tableView.wawaFootRefresh noData:@"暂无数据"];
     });
     

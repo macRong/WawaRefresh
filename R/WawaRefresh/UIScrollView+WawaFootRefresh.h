@@ -37,10 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WawaFootRefreshView: UIView
 
-@property (nonatomic, assign, readonly) BOOL isAnimation;
+@property (nonatomic, assign, readonly) BOOL isRefreshing;
 
-- (void)startAnimating;
-- (void)stopAnimating;
+- (void)beginRefreshing;
+- (void)endRefreshing;
 - (void)noData:(NSString *)text;
 
 

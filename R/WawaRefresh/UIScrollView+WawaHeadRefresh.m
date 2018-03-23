@@ -103,7 +103,7 @@ static char WawaHeadRefreshViewKey;
 
 @implementation WawaHeadRefreshView
 {
-    BOOL _isAnimation;
+    BOOL _isRefreshing;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -172,7 +172,7 @@ static char WawaHeadRefreshViewKey;
 
 #pragma mark -############################# Out ############################################################
 
-- (void)stopAnimation
+- (void)endRefreshing
 {
     if (self.loadingView.isAnimation)
     {
@@ -199,7 +199,7 @@ static char WawaHeadRefreshViewKey;
         _loadingView = nil;
     }
 
-    _isAnimation = NO;
+    _isRefreshing = NO;
     self.transform = CGAffineTransformIdentity;
 }
 
@@ -254,7 +254,7 @@ static char WawaHeadRefreshViewKey;
     __weak typeof(self)weakSelf = self;
     self.loadingView.loadingBlock = ^{
         typeof(weakSelf)SSelf = weakSelf;
-        _isAnimation = YES;
+        _isRefreshing = YES;
         WawaPullBomb = YES;
         SSelf.startRefreshActionHandler();
         
