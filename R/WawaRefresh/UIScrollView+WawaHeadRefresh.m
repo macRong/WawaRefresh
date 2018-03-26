@@ -142,7 +142,6 @@ static char WawaHeadRefreshViewKey;
         CGPoint p = [self.scrollView.panGestureRecognizer velocityInView:self.scrollView];
          CGFloat f =   self.scrollView.decelerationRate;
 //        NSLog(@"========11111===== %@, f=%f",NSStringFromCGPoint(p),f);
-        
 //        if (self.scrollView.isDragging)
     
             // set headView postion
@@ -171,6 +170,11 @@ static char WawaHeadRefreshViewKey;
 
 
 #pragma mark -############################# Out ############################################################
+
+- (void)beginRefreshing
+{
+    NSLog(@"==== beigin");
+}
 
 - (void)endRefreshing
 {

@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, assign, readonly) BOOL isRefreshing;
 
+- (void)beginRefreshing;
 - (void)endRefreshing;
 
 @end
