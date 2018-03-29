@@ -20,7 +20,6 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 
 @interface WawaFootRefreshView()
 {
-    CFRunLoopObserverRef _observer;
 }
 
 @property (nonatomic) WawaFootRefreshPosition footRefreshPosition;
@@ -36,6 +35,9 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 @property (nonatomic, assign) BOOL isPreDragging;
 @property (nonatomic, assign) BOOL isNodata;
 @property (nonatomic, assign) BOOL isObserving;
+
+// 加载完成后，是否还满足加载条件
+@property (nonatomic, assign) BOOL isPreTracking;
 
 
 - (void)resetScrollViewInsets;
@@ -108,6 +110,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     [self.wawaFootRefresh resetScrollViewInsets];
 }
 
+
 @end
 
 
@@ -122,11 +125,16 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     if (self)
     {
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        
+        [self initVar];
         (void)self.activityIndicatorView;
     }
     
     return self;
+}
+
+- (void)initVar
+{
+    self.isPreTracking = YES;
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
@@ -149,7 +157,8 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 - (void)beginRefreshing
 {
     self.isNodata = NO;
-    
+    self.isPreTracking = YES;
+
     self.bottomHintLabel.attributedText = self.attributedTitle;
     [self setNeedsLayout];
 }
@@ -157,15 +166,19 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 - (void)endRefreshing
 {
     self.isPreDragging = self.scrollView.isDragging;
-
+    self.isPreTracking = self.scrollView.tracking;
+    
     if (self.activityIndicatorView.isAnimating)
     {
-        NSLog(@"+++++++++ stopAnimating");
         [self.activityIndicatorView stopAnimating];
         self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     }
     
     [self setNeedsLayout];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"是否依然满足条件+++++++++ stopAnimating= %d",self.scrollView.contentSize.height - fabs(self.scrollView.contentOffset.y) - self.scrollView.bounds.size.height <= self.distanceBottom);
+    });
 }
 
 - (void)noData:(NSString *)text
@@ -212,6 +225,8 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 // ????
 - (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
 {
+//    NSLog(@"====== %d",self.isPreTracking);
+    
 //    NSLog(@"contentOffsetY===== %f",contentOffsetY);
     if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
     {
@@ -222,11 +237,11 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     
     if (self.scrollView.contentSize.height - fabs(contentOffsetY) - self.scrollView.bounds.size.height <= self.distanceBottom &&
         self.scrollView.isDragging &&
-        !self.isPreDragging &&
+//        !self.isPreDragging &&
+//        self.isPreTracking &&
+        !self.isRefreshing &&
         !self.isNodata)
     {
-        [self runloopWaitingStateObserve];
-
         if (_activityIndicatorView && !self.activityIndicatorView.isAnimating)
         {
             [self bomb];
@@ -252,11 +267,13 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     }];
 }
 
-
 BOOL con ;
 - (void)bomb
 {
     NSLog(@" 💥 ");
+    
+    self.isPreTracking = self.scrollView.tracking;
+    
     [self.activityIndicatorView startAnimating];
     self.bottomHintLabel.hidden = !self.activityIndicatorView.isAnimating;
     [self setNeedsLayout];
@@ -315,50 +332,19 @@ BOOL con ;
 {
     if ([keyPath isEqualToString:@"contentOffset"])
     {
-        NSLog(@"boser contentOffset ===== %d",self.isPreDragging);
+        
+//        NSLog(@"boser contentOffset ===== %d",self.isPreDragging);
         CGPoint pin =  [[change valueForKey:NSKeyValueChangeNewKey] CGPointValue];
         [self scrollViewContentOffsetY:pin.y];
     }
     else if([keyPath isEqualToString:@"contentSize"])
     {
-        NSLog(@"===== boser contentSize  %d",self.isPreDragging);
+//        NSLog(@"===== boser contentSize  %d",self.isPreDragging);
         [self layoutSubviews];
         [self resetScOriginY];
     }
 }
 
-- (void)runloopWaitingStateObserve
-{
-    CFRunLoopRef runLoop = CFRunLoopGetMain();
-    CFStringRef runLoopMode = kCFRunLoopDefaultMode;
-    
-    if (!_observer)
-    {
-        _observer = CFRunLoopObserverCreateWithHandler(
-                                                       kCFAllocatorDefault, kCFRunLoopBeforeWaiting,
-                                                       true,
-                                                       0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity)
-                                                       {
-                                                           if (!self.isRefreshing)
-                                                           {
-                                                               [self performSelectorOnMainThread:@selector(resetDra) withObject:nil waitUntilDone:NO modes:@[NSDefaultRunLoopMode]];
-                                                           }
-                                                           else
-                                                           {
-                                                               CFRunLoopRemoveObserver(runLoop, observer, runLoopMode);
-                                                           }
-                                                       });
-        CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
-    }
-    else
-    {
-        BOOL cont = CFRunLoopContainsObserver(runLoop, _observer, runLoopMode);
-        if (!cont)
-        {
-            CFRunLoopAddObserver(runLoop, _observer, runLoopMode);
-        }
-    }
-}
 
 - (void)resetDra
 {
