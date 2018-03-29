@@ -39,6 +39,8 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 // 加载完成后，是否还满足加载条件
 @property (nonatomic, assign) BOOL isPreTracking;
 
+@property (nonatomic, assign) BOOL isDistance;
+
 
 - (void)resetScrollViewInsets;
 
@@ -177,7 +179,8 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
     [self setNeedsLayout];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"是否依然满足条件+++++++++ stopAnimating= %d",self.scrollView.contentSize.height - fabs(self.scrollView.contentOffset.y) - self.scrollView.bounds.size.height <= self.distanceBottom);
+        self.isDistance  = self.scrollView.contentSize.height - fabs(self.scrollView.contentOffset.y) - self.scrollView.bounds.size.height <= self.distanceBottom;
+        NSLog(@"是否依然满足条件+++++++++ stopAnimating= %d",self.isDistance);
     });
 }
 
@@ -225,7 +228,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
 // ????
 - (void)scrollViewContentOffsetY:(CGFloat)contentOffsetY
 {
-//    NSLog(@"====== %d",self.isPreTracking);
+    NSLog(@"====== %d",self.isPreTracking);
     
 //    NSLog(@"contentOffsetY===== %f",contentOffsetY);
     if (contentOffsetY <= -WAWAFOOTVIEWHEIGHT) // ? 要优化
@@ -239,6 +242,7 @@ typedef NS_ENUM(NSUInteger, WawaFootRefreshPosition) {
         self.scrollView.isDragging &&
 //        !self.isPreDragging &&
 //        self.isPreTracking &&
+        !self.isDistance &&
         !self.isRefreshing &&
         !self.isNodata)
     {
